@@ -43,6 +43,7 @@
     --rx:0deg; --ry:0deg;
     --pointer-x:50%; --pointer-y:50%;
     --pointer-from-left:.5; --pointer-from-top:.5; --pointer-from-center:0;
+    --background-x:50%; --background-y:50%;
     --card-opacity:0;
     --sunpillar-1:hsl(2,100%,73%); --sunpillar-2:hsl(53,100%,69%); --sunpillar-3:hsl(93,100%,69%);
     --sunpillar-4:hsl(176,100%,76%); --sunpillar-5:hsl(228,100%,74%); --sunpillar-6:hsl(283,100%,73%);
@@ -144,36 +145,60 @@
   .meal-cta .opts{display:inline-flex;gap:3px;margin-right:2px;}
   .meal-cta .opts i{width:18px;height:18px;border-radius:6px;background:var(--card-2);border:1px solid var(--gold-soft);font-style:normal;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--lav);}
 
+  /* expandable transit/route card */
+  .tl-card.expandable{cursor:pointer;}
+  .exp-cta{margin-top:7px;font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--peri);font-weight:600;display:flex;align-items:center;gap:6px;}
+  .exp-cta .chev{display:inline-block;transition:transform .2s ease;}
+  .tl-card.expandable.open .exp-cta .chev{transform:rotate(90deg);}
+  .exp-detail{display:none;margin-top:8px;}
+  .tl-card.expandable.open .exp-detail{display:block;}
+  .exp-detail ol{margin:2px 0 0;padding-left:18px;}
+  .exp-detail li{font-size:12.5px;color:var(--ink-dim);margin-bottom:3px;}
+
   /* ---------- Holographic "headliner" cards (booked main events) ---------- */
   .headliner{display:inline-block;font-family:'Space Grotesk',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:2px 9px;border-radius:20px;margin-bottom:6px;background:var(--holo);color:#0a0a12;box-shadow:0 0 11px rgba(196,181,247,.4);}
 
-  /* ===== Reverse Holo (non-rare) — faithful to pokemon-cards-css. Clean & readable at rest; sheen only on point/tilt ===== */
+  /* ===== Pokémon V (Full Art) holo — CSS grid foil at rest, rainbow blooms on point/tilt ===== */
   .tl-card.booked{position:relative;overflow:hidden;border:1px solid #2b2b37;border-radius:12px;
-    background:linear-gradient(135deg,#0b0c11,#15151d);
+    background-color:#0b0c12;
+    /* "grid feeling" foil — pure CSS, no image */
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 23px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 23px),
+      repeating-linear-gradient(45deg, rgba(255,255,255,.02) 0 1px, transparent 1px 15px);
     box-shadow:0 10px 26px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
     transform:perspective(760px) rotateX(var(--rx)) rotateY(var(--ry));
     transform-style:preserve-3d;transition:transform .3s ease, box-shadow .3s ease;will-change:transform;}
   .tl-card.booked .tc, .tl-card.booked .thumb{position:relative;z-index:3;}
-  /* SHINE — holographic foil sheen tracking the pointer/tilt (grayscale gradients over rainbow foil) */
+  /* keep text legible over the holo */
+  .tl-card.booked .tl-act{text-shadow:0 1px 3px rgba(0,0,0,.75);}
+  .tl-card.booked .tl-note, .tl-card.booked .meal-cta{text-shadow:0 1px 2px rgba(0,0,0,.7);}
+  /* SHINE — rainbow sunpillar bands + metallic diagonal bands (V full-art recipe) */
   .tl-card.booked::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
+    --space:5%; --angle:133deg;
     background-image:
-      radial-gradient(circle at var(--pointer-x) var(--pointer-y), #fff 5%, #000 50%, #fff 80%),
-      linear-gradient(-45deg, #000 15%, #fff, #000 85%),
-      repeating-linear-gradient(-42deg,
-        var(--sunpillar-1),var(--sunpillar-2),var(--sunpillar-3),var(--sunpillar-4),var(--sunpillar-5),var(--sunpillar-6),var(--sunpillar-1) 60%);
-    background-blend-mode:soft-light, difference;
-    background-size:120% 120%, 200% 200%, 180% 180%;
-    background-position:center, calc(100%*var(--pointer-from-left)) calc(100%*var(--pointer-from-top)), center;
-    filter:brightness(.6) contrast(1.45) saturate(1);
+      repeating-linear-gradient(0deg,
+        var(--sunpillar-1) calc(var(--space)*1), var(--sunpillar-2) calc(var(--space)*2),
+        var(--sunpillar-3) calc(var(--space)*3), var(--sunpillar-4) calc(var(--space)*4),
+        var(--sunpillar-5) calc(var(--space)*5), var(--sunpillar-6) calc(var(--space)*6),
+        var(--sunpillar-1) calc(var(--space)*7)),
+      repeating-linear-gradient(var(--angle),
+        #0e152e 0%, hsl(180,10%,60%) 3.8%, hsl(180,29%,66%) 4.5%, hsl(180,10%,60%) 5.2%, #0e152e 10%, #0e152e 12%),
+      radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y),
+        hsla(0,0%,0%,.1) 12%, hsla(0,0%,0%,.15) 20%, hsla(0,0%,0%,.25) 120%);
+    background-blend-mode:hue, hard-light;
+    background-size:200% 700%, 300% 100%, 200% 100%;
+    background-position:0% var(--background-y), calc(var(--background-x) + (var(--background-y)*0.2)) var(--background-y), var(--background-x) var(--background-y);
+    filter:brightness(calc(var(--pointer-from-center)*.4 + .5)) contrast(1.4) saturate(2.1);
     mix-blend-mode:color-dodge;
-    opacity:calc(1.5*var(--card-opacity) - var(--pointer-from-center));
-    transition:opacity .3s ease;}
-  /* GLARE — soft light-spot following the pointer/tilt */
+    opacity:calc(.16 + var(--card-opacity)*.8);transition:opacity .3s ease;}
+  /* GLARE — metallic light-spot following the pointer/tilt */
   .tl-card.booked .glare{position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;
     background-image:radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y),
-      hsla(0,0%,100%,.7) 10%, hsla(0,0%,100%,.4) 22%, hsla(0,0%,0%,.6) 90%);
-    mix-blend-mode:overlay;filter:brightness(.85) contrast(1.3);
-    opacity:calc(var(--card-opacity)*.85);transition:opacity .3s ease;}
+      hsl(0,0%,80%) 5%, hsl(200,5%,30%) 60%, hsl(320,40%,10%) 150%);
+    background-size:120% 150%;background-position:center;
+    mix-blend-mode:hard-light;filter:brightness(.9) contrast(1.15);
+    opacity:calc(var(--card-opacity)*.7);transition:opacity .3s ease;}
   #motion-row{text-align:center;padding:2px 16px 0;}
   .motionbtn{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--lav);background:var(--card);border:1px solid var(--gold-soft);border-radius:30px;padding:7px 15px;cursor:pointer;}
 
@@ -529,10 +554,9 @@ const DAYS = [
     id:1, iso:"2026-06-27", label:"Day 1", date:"Sat · Jun 27", title:"Midtown Warm-Up + Wicked",
     theme:"Fresh off the red-eye — easy pace, an afternoon nap, then opening curtain.",
     prep:"Folding umbrella + light jacket (theatre A/C runs cold).",
-    reminders:["Allow 30+ min at immigration to collect bags","Confirm the plate before getting in the Uber (NYC yellow cabs ≠ Uber)","Download GalaPro before Wicked for translated captions","Hotel check-in isn't until 4 PM — drop bags first"],
+    reminders:["🎭 Wicked — 8:00 PM curtain @ Gershwin Theatre (premium ×2)"],
     items:[
-      {t:"7:18 AM", key:true, a:"Arrive EWR (Newark)", n:"~30 min from gate to exit on a domestic arrival", q:"Newark Liberty International Airport"},
-      {t:"8:00 AM", a:"Uber to the hotel", n:"Morning rush could mean 60+ min"},
+      {t:"7:18 AM", key:true, a:"Arrive EWR (Newark)", n:"~30 min gate-to-exit · then Uber to the hotel (60+ min in rush)", q:"Newark Liberty International Airport"},
       {t:"9:00–9:30", key:true, a:"Arrive hotel · drop bags at desk", n:"Keep toiletries in your day bag", q:"Renaissance New York Times Square Hotel"},
       {t:"10:00–11:30", a:"🍽️ Brunch", meal:1},
       {t:"11:30–1:00", a:"Times Square photos & big screens", n:"Right downstairs", q:"Times Square New York"},
@@ -541,73 +565,57 @@ const DAYS = [
       {t:"2:30–3:30", a:"Rockefeller → St. Patrick's → Fifth Ave stroll", n:"Heading north", q:"Rockefeller Center"},
       {t:"3:30–4:00", a:"Central Park South", n:"Carriages, Plaza Hotel", q:"Central Park South"},
       {t:"4:00 PM", key:true, a:"Hotel check-in · nap 1.5 hrs", n:"You'll need it to last through the show", q:"Renaissance New York Times Square Hotel"},
-      {t:"5:45 PM", a:"Up, freshen up, head out", n:"Bring a light layer — cold theatre"},
       {t:"6:00–7:15", a:"🍽️ Koreatown dinner", meal:2},
-      {t:"7:30 PM", a:"Walk to Gershwin Theatre", n:"222 W 51 St", q:"Gershwin Theatre New York"},
-      {t:"8:00 PM", key:true, booked:true, a:"🎭 Wicked — curtain up", n:"One intermission · ~2h45m total", q:"Gershwin Theatre New York"},
-      {t:"~10:45", a:"Curtain down", n:"5 min walk back to hotel"},
+      {t:"8:00 PM", key:true, booked:true, a:"🎭 Wicked — curtain up", n:"Gershwin Theatre · 222 W 51 St · ~2h45m, one intermission", q:"Gershwin Theatre New York"},
       {t:"11:00 PM", a:"🍰 Late dessert", meal:3},
-      {t:"~11:30", a:"Back to the room", n:""},
     ],
   },
   {
     id:2, iso:"2026-06-28", label:"Day 2", date:"Sun · Jun 28", title:"Lady Liberty + Lower Manhattan + DUMBO",
     theme:"The classic downtown day — from the Statue of Liberty to the Manhattan skyline at DUMBO.",
     prep:"Sunglasses, sunscreen, comfy shoes, water.",
-    reminders:["Screenshot the Liberty QR codes to your photos (poor signal on the island)","Charge phones fully + bring a power bank","Pedestal ticket needs no passport","Hit the pedestal first (second security) before time runs short","DUMBO photo spot: Washington St × Water St"],
+    reminders:["🗽 Statue of Liberty — 11:00 AM security entry (QR codes ×2)","🍽️ DUMBO dinner — reserve ahead if choosing Celestine / River Café"],
     items:[
       {t:"7:30–8:30", a:"🍽️ Breakfast", meal:4},
       {t:"9:30 AM", key:true, a:"Walk to Times Sq–42 St Station", n:"5 min", q:"Times Square 42 Street Subway Station"},
       {t:"9:45 AM", a:"1 train (Downtown) → South Ferry", n:"Last stop — can't overshoot · 20–25 min", q:"South Ferry Subway Station Manhattan"},
-      {t:"10:15 AM", a:"Battery Park · find Statue City Cruises security", n:"Behind Castle Clinton", q:"Battery Park New York"},
-      {t:"10:30 AM", a:"Join the security line", n:"Arrive 30 min early"},
+      {t:"10:15 AM", a:"Battery Park · Statue City Cruises security", n:"Behind Castle Clinton · arrive ~30 min early", q:"Battery Park New York"},
       {t:"11:00 AM", key:true, booked:true, a:"🗽 Statue of Liberty (Pedestal)", n:"Ticket time = security time · pedestal + museum", q:"Liberty Island New York"},
       {t:"11:30–1:00", a:"Liberty Island: pedestal + museum", n:"Pedestal first (2nd security)", q:"Liberty Island New York"},
       {t:"12:30 PM", a:"🍽️ Lunch", meal:5},
-      {t:"1:00–3:00", a:"Ferry to Ellis Island · immigration museum", n:"Free audio guide", q:"Ellis Island National Museum"},
-      {t:"3:30 PM", a:"Ferry back to Battery Park", n:"", q:"Battery Park New York"},
+      {t:"1:00–3:00", a:"Ferry to Ellis Island · immigration museum", n:"Free audio guide · ferry back to Battery Park after", q:"Ellis Island National Museum"},
       {t:"3:45–4:15", a:"Battery Park → Charging Bull", n:"Expect a photo line at the bull", q:"Charging Bull Wall Street"},
       {t:"4:15–5:00", a:"Wall St → Federal Hall → Trinity Church", n:"The prettiest stretch of Wall St", q:"Wall Street New York"},
       {t:"5:00–5:45", a:"9/11 Memorial pools → Oculus", n:"Look up inside the Oculus", q:"9 11 Memorial New York"},
-      {t:"5:45 PM", a:"Start walking the Brooklyn Bridge", n:"From the Manhattan side", q:"Brooklyn Bridge Manhattan Entrance"},
-      {t:"6:30 PM", key:true, a:"Arrive DUMBO", n:"~30–40 min across the bridge", q:"Washington St and Water St Brooklyn"},
+      {t:"5:45–6:30 PM", key:true, a:"🌉 Walk the Brooklyn Bridge → DUMBO", n:"From the Manhattan side · ~30–40 min across", q:"Washington St and Water St Brooklyn"},
       {t:"6:30–7:15", a:"📸 Washington St × Water St shot", n:"Golden hour begins — best light", q:"Washington St and Water St Brooklyn"},
       {t:"7:30 PM", key:true, a:"🍽️ DUMBO dinner ⭐", meal:6},
-      {t:"9:00 PM", a:"Brooklyn Bridge Park / Pebble Beach", n:"Skyline glows after dark", q:"Brooklyn Bridge Park Pebble Beach"},
-      {t:"9:30 PM", a:"Uber back to the hotel", n:"Subway needs a transfer — Uber if tired"},
-      {t:"~10:00", a:"Back to the room", n:""},
+      {t:"9:00 PM", a:"Brooklyn Bridge Park / Pebble Beach", n:"Skyline glows after dark · Uber back when done", q:"Brooklyn Bridge Park Pebble Beach"},
     ],
   },
   {
     id:3, iso:"2026-06-29", label:"Day 3", date:"Mon · Jun 29", title:"Neighborhood Walks + Empire State Sunset",
     theme:"West side & downtown at a slow pace, a steakhouse lunch, capped by sunset atop the Empire State.",
     prep:"Comfy shoes — this is the most-walking day.",
-    reminders:["Keens reservation 12:45 PM — arrive 5–10 min early, give the host your name","Empire State 7:45 PM — entrance at 20 West 34th St, take the 'red carpet' Express lane","Want the 102nd floor? Add it at the 86th-floor kiosk (~$35–38)","Pack your bags tonight — 7:30 AM departure tomorrow"],
+    reminders:["🥩 Keens — 12:45 PM reservation (Resy ×2)","🏙️ Empire State — 7:45 PM (conf 7WHHNG8H · Express lane @ 20 W 34th St)"],
     items:[
       {t:"8:30–9:30", a:"🍽️ Light breakfast", meal:7},
-      {t:"9:45 AM", a:"Walk to Times Sq–42 St Station", n:"", q:"Times Square 42 Street Subway Station"},
-      {t:"10:00 AM", a:"N/Q/R/W (Downtown) → Canal St", n:"5 stops, 15 min — take the NQRW Canal St", q:"Canal Street Subway Station NQRW Manhattan"},
+      {t:"10:00 AM", a:"🚇 Subway to Chinatown (Canal St)", steps:["Walk to Times Sq–42 St Station","N/Q/R/W Downtown → Canal St (5 stops, ~15 min)","Use the NQRW Canal St platform"], q:"Canal Street Subway Station NQRW Manhattan"},
       {t:"10:15–11:30", a:"Chinatown → Little Italy", n:"Mott St, Mulberry St", q:"Chinatown Manhattan"},
       {t:"11:30–12:30", a:"SoHo shopping", n:"Prince St, Spring St, Broadway", q:"SoHo New York"},
-      {t:"12:30 PM", a:"N/Q/R/W Prince St → 34 St–Herald Sq", n:"5 stops, 10 min", q:"Prince Street Subway Station"},
+      {t:"12:30 PM", a:"🚇 Subway to Herald Sq", steps:["N/Q/R/W from Prince St → 34 St–Herald Sq (5 stops, ~10 min)","Keens is a ~4 min walk from Herald Sq"], q:"Prince Street Subway Station"},
       {t:"12:45 PM", key:true, booked:true, a:"🥩 Keens Steakhouse lunch", meal:0},
-      {t:"2:30 PM", a:"Done at Keens", n:"Walk it off"},
-      {t:"2:30–3:15", a:"Subway/Uber to West Village", n:"A/C/E to 14 St", q:"West Village New York"},
+      {t:"2:30 PM", a:"Done at Keens · walk to West Village", n:"~15 min stroll to digest (or A/C/E to 14 St)", q:"West Village New York"},
       {t:"3:15–4:00", a:"West Village & Meatpacking stroll", n:"Bleecker St, Christopher St", q:"Meatpacking District New York"},
-      {t:"4:00 PM", a:"Up the High Line at Gansevoort St", n:"South entrance", q:"High Line New York"},
-      {t:"4:00–5:30", a:"Walk the High Line north", n:"~1.5 mi end to end", q:"High Line New York"},
-      {t:"5:30 PM", a:"Arrive Hudson Yards", n:"North end of the High Line", q:"Vessel Hudson Yards"},
+      {t:"4:00–5:30", a:"🌳 Walk the High Line → Hudson Yards", steps:["Enter at Gansevoort St (south end)","Walk north ~1.5 mi / 2.5 km","Exit at Hudson Yards (north end)"], q:"High Line New York"},
       {t:"5:30–6:00", a:"🌀 Vessel exterior photos", n:"Shoot up from the plaza", q:"Vessel Hudson Yards"},
-      {t:"6:00 PM", a:"7 train: 34 St–Hudson Yards → Times Sq", n:"Or 25 min walk", q:"34 Street Hudson Yards Subway Station"},
-      {t:"6:30 PM", a:"Back to hotel · rest & change", n:"Pack bags"},
-      {t:"7:30 PM", a:"Walk to the Empire State Building", n:"12 min from hotel", q:"Empire State Building"},
-      {t:"7:45 PM", key:true, booked:true, a:"🏙️ Empire State Building (86F + Express)", n:"20 W 34th St · Express lane · sunset", q:"Empire State Building"},
-      {t:"8:00 PM", a:"86th-floor observatory", n:"Golden hour"},
+      {t:"6:00 PM", a:"🚇 7 train → Times Sq", steps:["7 train from 34 St–Hudson Yards → Times Sq","Or walk ~25 min"], q:"34 Street Hudson Yards Subway Station"},
+      {t:"6:30 PM", a:"Back to hotel · rest & change", n:"Pack bags", q:"Renaissance New York Times Square Hotel"},
+      {t:"7:45 PM", key:true, booked:true, a:"🏙️ Empire State Building (86F + Express)", n:"12 min walk from hotel · entrance 20 W 34th St · Express lane", q:"Empire State Building"},
+      {t:"8:00 PM", a:"86th-floor observatory", n:"Golden hour", q:"Empire State Building"},
       {t:"8:30 PM", key:true, a:"🌅 Sunset", n:""},
       {t:"8:30–9:15", a:"City lights up · add 102F if you like", n:"Upgrade kiosk on the 86th floor"},
-      {t:"9:30 PM", a:"Head down", n:""},
       {t:"9:30–10:00", a:"🍽️ Late dinner", meal:8},
-      {t:"10:30 PM", a:"Back to hotel · pack & sleep early", n:""},
     ],
   },
 ];
@@ -744,12 +752,20 @@ function renderDay(id, autoscroll){
     const img = (loc && loc.img) ? loc.img : "";
     const pkey = img || wiki || search;
     const thumb = it.q ? `<div class="thumb" data-pkey="${attr(pkey)}" data-wiki="${attr(wiki)}" data-search="${attr(search)}" data-img="${attr(img)}">${firstEmoji(it.a)}</div>` : "";
+    if(it.steps){
+      return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
+      <div class="tl-card expandable"><div class="tc"><div class="tl-act">${it.a}</div>
+        <div class="exp-cta">View route · ${it.steps.length} steps <span class="chev">›</span></div>
+        <div class="exp-detail"><ol>${it.steps.map(s=>`<li>${s}</li>`).join("")}</ol>${it.q?`<div style="margin-top:6px">${mapLinkHTML(it.q)}</div>`:""}</div>
+      </div>${thumb}</div></div>`;
+    }
     return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
       <div class="tl-card ${it.key?'key':''}${it.booked?' booked':''}">${it.booked?'<span class="glare"></span>':''}<div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>
         ${it.n?`<div class="tl-note">${it.n}</div>`:""}${it.q?`<div style="margin-top:6px">${mapLinkHTML(it.q)}</div>`:""}</div>${thumb}</div></div>`;
   }).join("") + `</div><div class="spacer"></div>`;
   $("#day-content").innerHTML = html;
   document.querySelectorAll("#day-content .tl-card.meal").forEach(c => c.onclick = () => openMeal(+c.dataset.meal));
+  document.querySelectorAll("#day-content .tl-card.expandable").forEach(c => c.onclick = () => c.classList.toggle("open"));
   observePhotos($("#day-content"));
   wireBookedFX($("#day-content"));
   highlightNow(d, autoscroll);
@@ -763,6 +779,8 @@ function setCardVars(s, px, py){
   s.setProperty("--pointer-from-left",px.toFixed(3));
   s.setProperty("--pointer-from-top",py.toFixed(3));
   s.setProperty("--pointer-from-center",fromCenter.toFixed(3));
+  s.setProperty("--background-x",(20+px*60).toFixed(1)+"%");
+  s.setProperty("--background-y",(20+py*60).toFixed(1)+"%");
   s.setProperty("--ry",((px-.5)*22).toFixed(2)+"deg");
   s.setProperty("--rx",(-(py-.5)*18).toFixed(2)+"deg");
   s.setProperty("--card-opacity","1");
