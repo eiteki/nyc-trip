@@ -177,7 +177,7 @@
       var(--sunpillar-1),var(--sunpillar-2),var(--sunpillar-3),var(--sunpillar-4),var(--sunpillar-5),var(--sunpillar-6),var(--sunpillar-1));
     background-size:300% 300%;
     mix-blend-mode:color-dodge;
-    opacity:calc(.16 + var(--card-opacity)*.5);
+    opacity:calc(.22 + var(--card-opacity)*.45);
     animation:holoGradient 7s ease infinite;transition:opacity .3s ease;}
   /* foil sparkle mask layer (Option A) */
   .tl-card.booked.foil::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;
@@ -187,7 +187,12 @@
     -webkit-mask-image:url("img/foil-mask.png");mask-image:url("img/foil-mask.png");
     -webkit-mask-size:200px;mask-size:200px;-webkit-mask-repeat:repeat;mask-repeat:repeat;
     mix-blend-mode:color-dodge;filter:contrast(1.6) saturate(1.4) brightness(1.05);
-    opacity:calc(.10 + var(--card-opacity)*.6);animation:holoGradient 7s ease infinite;transition:opacity .3s ease;}
+    opacity:calc(.16 + var(--card-opacity)*.55);animation:holoGradient 7s ease infinite;transition:opacity .3s ease;}
+  /* motion shine on (mobile) keeps cards lit & persistent across tab switches */
+  html.motion-on .tl-card.booked{--card-opacity:1;}
+  /* when tilting (mobile) or hovering (desktop): stop the idle animation and let the tilt drive the shine */
+  .tl-card.booked.lit::before, html.motion-on .tl-card.booked::before{animation:none;background-position:var(--background-x) var(--background-y);}
+  .tl-card.booked.lit.foil::after, html.motion-on .tl-card.booked.foil::after{animation:none;background-position:var(--background-x) var(--background-y);}
   @keyframes holoGradient{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
   @media (prefers-reduced-motion: reduce){ .tl-card.booked::before,.tl-card.booked.foil::after{animation:none;} }
   #motion-row{text-align:center;padding:2px 16px 0;}
@@ -557,7 +562,7 @@ const DAYS = [
     items:[
       {t:"9:00 AM", noimg:true, a:"Wake up · easy breakfast", n:"Hotel or a nearby café"},
       {t:"10:00 AM", noimg:true, a:"🚇 Subway downtown to Chinatown", steps:["Walk to Times Sq–42 St Station (5 min)","N/Q/R/W Downtown → Canal St (5 stops, ~15 min)"], q:"Canal Street Subway Station NQRW Manhattan"},
-      {t:"10:15–11:15", a:"🥟 Chinatown + Little Italy", n:"Mott St, Mulberry St", q:"Chinatown Manhattan"},
+      {t:"10:15–11:15", noimg:true, a:"🥟 Chinatown + Little Italy", n:"Mott St, Mulberry St", q:"Chinatown Manhattan"},
       {t:"11:30–12:30", img:"img/charging-bull.png", a:"🐂 Charging Bull → Wall St → Trinity Church", n:"Federal Hall & Trinity Church too · photo line at the bull (4/5 train Canal → Wall St)", q:"Charging Bull Wall Street"},
       {t:"12:30–1:30", a:"🍽️ Lunch", meal:4},
       {t:"1:30 PM", noimg:true, a:"🚇 1 train back to Times Sq", steps:["1 train from Rector St → Times Sq (~20 min)","Back to the hotel to freshen up & change"], q:"Rector Street Subway Station"},
@@ -566,7 +571,7 @@ const DAYS = [
       {t:"6:30 PM", noimg:true, a:"Uber to DUMBO", n:"~20 min across the river", q:"DUMBO Brooklyn"},
       {t:"7:00 PM", img:"img/dumbo.png", a:"📸 Washington St × Water St shot", n:"Golden hour — classic Manhattan Bridge view", q:"Washington St and Water St Brooklyn"},
       {t:"7:30 PM", key:true, a:"🍽️ DUMBO dinner ⭐", meal:5},
-      {t:"~8:30 PM", a:"🌅 Sunset · Brooklyn Bridge Park", n:"Pebble Beach — skyline glows after dark", q:"Brooklyn Bridge Park Pebble Beach"},
+      {t:"~8:30 PM", noimg:true, a:"🌅 Sunset · Brooklyn Bridge Park", n:"Pebble Beach — skyline glows after dark", q:"Brooklyn Bridge Park Pebble Beach"},
       {t:"9:30 PM", noimg:true, a:"Uber back to the hotel", n:""},
     ],
   },
@@ -586,7 +591,7 @@ const DAYS = [
       {t:"12:00 PM", noimg:true, a:"🚇 Subway to Midtown (Keens)", steps:["1 train from South Ferry → 34 St–Penn Station (~25 min)","Keens is a ~5 min walk from Penn Station"], q:"34 Street Penn Station Subway"},
       {t:"2:00 PM", key:true, booked:true, a:"🥩 Keens Steakhouse lunch", meal:0},
       {t:"4:15 PM", noimg:true, a:"🚇 Subway to SoHo", steps:["N/Q/R/W from 34 St–Herald Sq → Prince St (~5 min)"], q:"Prince Street Subway Station"},
-      {t:"4:30–5:45", a:"🛍️ SoHo shopping", n:"Prince St, Spring St, Broadway — walk off the steak", q:"SoHo New York"},
+      {t:"4:30–5:45", noimg:true, a:"🛍️ SoHo shopping", n:"Prince St, Spring St, Broadway — walk off the steak", q:"SoHo New York"},
       {t:"6:00 PM", noimg:true, a:"🚇 Back to the hotel · freshen up", steps:["N/Q/R/W from Prince St → 34 St–Herald Sq (~5 min)","Rest & change; pack a bit for tomorrow"], q:"34th Street Herald Square Subway Station"},
       {t:"7:45 PM", key:true, booked:true, img:"img/empire-state.png", a:"🏙️ Empire State Building (86F + Express)", n:"12 min walk · entrance 20 W 34th St · Express lane → 86th floor (golden hour)", q:"Empire State Building"},
       {t:"8:30 PM", key:true, a:"🌅 Sunset", n:""},
@@ -769,6 +774,7 @@ function wireBookedFX(root){
       const px = Math.min(1,Math.max(0,(ev.clientX-r.left)/r.width));
       const py = Math.min(1,Math.max(0,(ev.clientY-r.top)/r.height));
       setCardVars(card.style, px, py);
+      card.classList.add("lit");
     });
     card.addEventListener("pointerleave", ev=>{
       if(ev.pointerType && ev.pointerType!=="mouse") return; // touch → leave gyroscope in control
@@ -776,6 +782,7 @@ function wireBookedFX(root){
       s.setProperty("--card-opacity","0");
       s.setProperty("--rx","0deg"); s.setProperty("--ry","0deg");
       s.setProperty("--pointer-from-center","0");
+      card.classList.remove("lit");
     });
   });
 }
