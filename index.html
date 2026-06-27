@@ -45,6 +45,7 @@
     --pointer-from-left:.5; --pointer-from-top:.5; --pointer-from-center:0;
     --background-x:50%; --background-y:50%;
     --card-opacity:0;
+    --card-glow:hsl(265,90%,86%);
     --sunpillar-1:hsl(2,100%,73%); --sunpillar-2:hsl(53,100%,69%); --sunpillar-3:hsl(93,100%,69%);
     --sunpillar-4:hsl(176,100%,76%); --sunpillar-5:hsl(228,100%,74%); --sunpillar-6:hsl(283,100%,73%);
   }
@@ -158,47 +159,55 @@
   /* ---------- Holographic "headliner" cards (booked main events) ---------- */
   .headliner{display:inline-block;font-family:'Space Grotesk',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:2px 9px;border-radius:20px;margin-bottom:6px;background:var(--holo);color:#0a0a12;box-shadow:0 0 11px rgba(196,181,247,.4);}
 
-  /* ===== Pokémon V (Full Art) holo — CSS grid foil at rest, rainbow blooms on point/tilt ===== */
+  /* ===== Radiant Holofoil — crosshatch metal "grid" + pastel rainbow; shimmers at rest, reacts to point/tilt ===== */
   .tl-card.booked{position:relative;overflow:hidden;border:1px solid #2b2b37;border-radius:12px;
-    background-color:#0b0c12;
-    /* "grid feeling" foil — pure CSS, no image */
-    background-image:
-      repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 23px),
-      repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 23px),
-      repeating-linear-gradient(45deg, rgba(255,255,255,.02) 0 1px, transparent 1px 15px);
+    background:#0a0b10;
     box-shadow:0 10px 26px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
     transform:perspective(760px) rotateX(var(--rx)) rotateY(var(--ry));
     transform-style:preserve-3d;transition:transform .3s ease, box-shadow .3s ease;will-change:transform;}
   .tl-card.booked .tc, .tl-card.booked .thumb{position:relative;z-index:3;}
   /* keep text legible over the holo */
-  .tl-card.booked .tl-act{text-shadow:0 1px 3px rgba(0,0,0,.75);}
-  .tl-card.booked .tl-note, .tl-card.booked .meal-cta{text-shadow:0 1px 2px rgba(0,0,0,.7);}
-  /* SHINE — rainbow sunpillar bands + metallic diagonal bands (V full-art recipe) */
+  .tl-card.booked .tl-act{text-shadow:0 1px 3px rgba(0,0,0,.8);}
+  .tl-card.booked .tl-note, .tl-card.booked .meal-cta{text-shadow:0 1px 2px rgba(0,0,0,.75);}
+  /* SHINE 1 — brushed-metal crosshatch (the "grid"): 45° × −45° bars + radial highlight */
   .tl-card.booked::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
-    --space:5%; --angle:133deg;
+    --barwidth:1.2%;
     background-image:
-      repeating-linear-gradient(0deg,
-        var(--sunpillar-1) calc(var(--space)*1), var(--sunpillar-2) calc(var(--space)*2),
-        var(--sunpillar-3) calc(var(--space)*3), var(--sunpillar-4) calc(var(--space)*4),
-        var(--sunpillar-5) calc(var(--space)*5), var(--sunpillar-6) calc(var(--space)*6),
-        var(--sunpillar-1) calc(var(--space)*7)),
-      repeating-linear-gradient(var(--angle),
-        #0e152e 0%, hsl(180,10%,60%) 3.8%, hsl(180,29%,66%) 4.5%, hsl(180,10%,60%) 5.2%, #0e152e 10%, #0e152e 12%),
-      radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y),
-        hsla(0,0%,0%,.1) 12%, hsla(0,0%,0%,.15) 20%, hsla(0,0%,0%,.25) 120%);
-    background-blend-mode:hue, hard-light;
-    background-size:200% 700%, 300% 100%, 200% 100%;
-    background-position:0% var(--background-y), calc(var(--background-x) + (var(--background-y)*0.2)) var(--background-y), var(--background-x) var(--background-y);
-    filter:brightness(calc(var(--pointer-from-center)*.4 + .5)) contrast(1.4) saturate(2.1);
+      radial-gradient(farthest-corner ellipse at calc(var(--pointer-x)*.5 + 25%) calc(var(--pointer-y)*.5 + 25%), hsl(0,0%,95%) 20%, var(--card-glow) 130%),
+      repeating-linear-gradient(45deg, hsl(0,0%,10%) 0%, hsl(0,0%,10%) var(--barwidth), hsl(0,0%,22%) calc(var(--barwidth)*2), hsl(0,0%,38%) calc(var(--barwidth)*3), hsl(0,0%,50%) calc(var(--barwidth)*4), hsl(0,0%,38%) calc(var(--barwidth)*5), hsl(0,0%,22%) calc(var(--barwidth)*6), hsl(0,0%,10%) calc(var(--barwidth)*7), hsl(0,0%,0%) calc(var(--barwidth)*8), hsl(0,0%,0%) calc(var(--barwidth)*10)),
+      repeating-linear-gradient(-45deg, hsl(0,0%,10%) 0%, hsl(0,0%,10%) var(--barwidth), hsl(0,0%,22%) calc(var(--barwidth)*2), hsl(0,0%,38%) calc(var(--barwidth)*3), hsl(0,0%,50%) calc(var(--barwidth)*4), hsl(0,0%,38%) calc(var(--barwidth)*5), hsl(0,0%,22%) calc(var(--barwidth)*6), hsl(0,0%,10%) calc(var(--barwidth)*7), hsl(0,0%,0%) calc(var(--barwidth)*8), hsl(0,0%,0%) calc(var(--barwidth)*10));
+    background-size:cover, 210% 210%, 210% 210%;
+    background-position:center, 0% 0%, 0% 0%;
+    background-blend-mode:exclusion, darken, color-dodge;
+    filter:brightness(.5) contrast(2) saturate(1.75);
     mix-blend-mode:color-dodge;
-    opacity:calc(.16 + var(--card-opacity)*.8);transition:opacity .3s ease;}
-  /* GLARE — metallic light-spot following the pointer/tilt */
+    opacity:calc(.4 + var(--card-opacity)*.45);
+    animation:radiantShift 9s ease-in-out infinite;}
+  /* SHINE 2 — pastel rainbow sweep */
+  .tl-card.booked::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
+    --space:200px;
+    background-image:repeating-linear-gradient(55deg,
+      hsl(3,95%,85%) calc(var(--space)*1), hsl(207,100%,84%) calc(var(--space)*2), hsl(29,100%,85%) calc(var(--space)*3),
+      hsl(160,100%,86%) calc(var(--space)*4), hsl(309,94%,87%) calc(var(--space)*5), hsl(188,95%,85%) calc(var(--space)*6),
+      hsl(3,95%,85%) calc(var(--space)*7));
+    background-size:400% 100%;background-position:0% 0%;
+    filter:brightness(.6) contrast(2.3) saturate(1.9);
+    mix-blend-mode:color-dodge;
+    opacity:calc(.16 + var(--card-opacity)*.7);
+    animation:radiantRainbow 9s ease-in-out infinite;}
+  /* GLARE — light-spot following the pointer/tilt */
   .tl-card.booked .glare{position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;
-    background-image:radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y),
-      hsl(0,0%,80%) 5%, hsl(200,5%,30%) 60%, hsl(320,40%,10%) 150%);
-    background-size:120% 150%;background-position:center;
-    mix-blend-mode:hard-light;filter:brightness(.9) contrast(1.15);
-    opacity:calc(var(--card-opacity)*.7);transition:opacity .3s ease;}
+    background-image:radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y), hsla(0,0%,100%,.33) 0%, hsl(0,0%,25%) 110%);
+    mix-blend-mode:hard-light;filter:brightness(1) contrast(1.5);
+    opacity:calc(.08 + var(--card-opacity)*.45);transition:opacity .3s ease;}
+  @keyframes radiantShift{0%{background-position:center,0% 0%,0% 0%}50%{background-position:center,100% 100%,-100% 60%}100%{background-position:center,0% 0%,0% 0%}}
+  @keyframes radiantRainbow{0%{background-position:0% 0%}50%{background-position:100% 0%}100%{background-position:0% 0%}}
+  /* interaction — pointer (desktop) / gyroscope (mobile) drives position, stops the idle shimmer */
+  .tl-card.booked.lit::before, html.motion-on .tl-card.booked::before{animation:none;
+    background-position:center, calc((var(--background-x) - 50%)*1.5 + 50%) calc((var(--background-y) - 50%)*1.5 + 50%), calc((var(--background-x) - 50%)*1.5 + 50%) calc((var(--background-y) - 50%)*1.5 + 50%);}
+  .tl-card.booked.lit::after, html.motion-on .tl-card.booked::after{animation:none;
+    background-position:calc((var(--background-x) - 50%)*-2.5 + 50%) 0%;}
+  @media (prefers-reduced-motion: reduce){ .tl-card.booked::before,.tl-card.booked::after{animation:none;} }
   #motion-row{text-align:center;padding:2px 16px 0;}
   .motionbtn{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--lav);background:var(--card);border:1px solid var(--gold-soft);border-radius:30px;padding:7px 15px;cursor:pointer;}
 
