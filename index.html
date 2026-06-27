@@ -45,9 +45,10 @@
     --pointer-from-left:.5; --pointer-from-top:.5; --pointer-from-center:0;
     --background-x:50%; --background-y:50%;
     --card-opacity:0;
-    --card-glow:hsl(265,90%,86%);
-    --sunpillar-1:hsl(2,100%,73%); --sunpillar-2:hsl(53,100%,69%); --sunpillar-3:hsl(93,100%,69%);
-    --sunpillar-4:hsl(176,100%,76%); --sunpillar-5:hsl(228,100%,74%); --sunpillar-6:hsl(283,100%,73%);
+    --card-glow:hsl(258,100%,90%);
+    /* holo palette matched to the app theme (mint → aqua → periwinkle → lavender → pink) */
+    --sunpillar-1:#9ff0b5; --sunpillar-2:#8fe6d0; --sunpillar-3:#8fb8f5;
+    --sunpillar-4:#c4b5f7; --sunpillar-5:#efb3e4; --sunpillar-6:#b9c4f7;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
@@ -187,11 +188,11 @@
   .tl-card.booked::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
     --space:200px;
     background-image:repeating-linear-gradient(55deg,
-      hsl(3,95%,85%) calc(var(--space)*1), hsl(207,100%,84%) calc(var(--space)*2), hsl(29,100%,85%) calc(var(--space)*3),
-      hsl(160,100%,86%) calc(var(--space)*4), hsl(309,94%,87%) calc(var(--space)*5), hsl(188,95%,85%) calc(var(--space)*6),
-      hsl(3,95%,85%) calc(var(--space)*7));
+      var(--sunpillar-1) calc(var(--space)*1), var(--sunpillar-2) calc(var(--space)*2), var(--sunpillar-3) calc(var(--space)*3),
+      var(--sunpillar-4) calc(var(--space)*4), var(--sunpillar-5) calc(var(--space)*5), var(--sunpillar-6) calc(var(--space)*6),
+      var(--sunpillar-1) calc(var(--space)*7));
     background-size:400% 100%;background-position:0% 0%;
-    filter:brightness(.6) contrast(2.3) saturate(1.9);
+    filter:brightness(.72) contrast(2.1) saturate(1.7);
     mix-blend-mode:color-dodge;
     opacity:calc(.16 + var(--card-opacity)*.7);
     animation:radiantRainbow 9s ease-in-out infinite;}
@@ -586,8 +587,8 @@ const DAYS = [
     reminders:["🗽 Statue of Liberty — 11:00 AM security entry (QR codes ×2)","🍽️ DUMBO dinner — reserve ahead if choosing Celestine / River Café"],
     items:[
       {t:"7:30–8:30", a:"🍽️ Breakfast", meal:4},
-      {t:"9:30 AM", key:true, a:"Walk to Times Sq–42 St Station", n:"5 min", q:"Times Square 42 Street Subway Station"},
-      {t:"9:45 AM", a:"1 train (Downtown) → South Ferry", n:"Last stop — can't overshoot · 20–25 min", q:"South Ferry Subway Station Manhattan"},
+      {t:"9:30 AM", key:true, noimg:true, a:"Walk to Times Sq–42 St Station", n:"5 min", q:"Times Square 42 Street Subway Station"},
+      {t:"9:45 AM", noimg:true, a:"1 train (Downtown) → South Ferry", n:"Last stop — can't overshoot · 20–25 min", q:"South Ferry Subway Station Manhattan"},
       {t:"10:15 AM", a:"Battery Park · Statue City Cruises security", n:"Behind Castle Clinton · arrive ~30 min early", q:"Battery Park New York"},
       {t:"11:00 AM", key:true, booked:true, a:"🗽 Statue of Liberty (Pedestal)", n:"Ticket time = security time · pedestal + museum", q:"Liberty Island New York"},
       {t:"11:30–1:00", a:"Liberty Island: pedestal + museum", n:"Pedestal first (2nd security)", q:"Liberty Island New York"},
@@ -609,17 +610,17 @@ const DAYS = [
     reminders:["🥩 Keens — 12:45 PM reservation (Resy ×2)","🏙️ Empire State — 7:45 PM (conf 7WHHNG8H · Express lane @ 20 W 34th St)"],
     items:[
       {t:"8:30–9:30", a:"🍽️ Light breakfast", meal:7},
-      {t:"10:00 AM", a:"🚇 Subway to Chinatown (Canal St)", steps:["Walk to Times Sq–42 St Station","N/Q/R/W Downtown → Canal St (5 stops, ~15 min)","Use the NQRW Canal St platform"], q:"Canal Street Subway Station NQRW Manhattan"},
+      {t:"10:00 AM", noimg:true, a:"🚇 Subway to Chinatown (Canal St)", steps:["Walk to Times Sq–42 St Station","N/Q/R/W Downtown → Canal St (5 stops, ~15 min)","Use the NQRW Canal St platform"], q:"Canal Street Subway Station NQRW Manhattan"},
       {t:"10:15–11:30", a:"Chinatown → Little Italy", n:"Mott St, Mulberry St", q:"Chinatown Manhattan"},
       {t:"11:30–12:30", a:"SoHo shopping", n:"Prince St, Spring St, Broadway", q:"SoHo New York"},
-      {t:"12:30 PM", a:"🚇 Subway to Herald Sq", steps:["N/Q/R/W from Prince St → 34 St–Herald Sq (5 stops, ~10 min)","Keens is a ~4 min walk from Herald Sq"], q:"Prince Street Subway Station"},
+      {t:"12:30 PM", noimg:true, a:"🚇 Subway to Herald Sq", steps:["N/Q/R/W from Prince St → 34 St–Herald Sq (5 stops, ~10 min)","Keens is a ~4 min walk from Herald Sq"], q:"Prince Street Subway Station"},
       {t:"12:45 PM", key:true, booked:true, a:"🥩 Keens Steakhouse lunch", meal:0},
       {t:"2:30 PM", a:"Done at Keens · walk to West Village", n:"~15 min stroll to digest (or A/C/E to 14 St)", q:"West Village New York"},
       {t:"3:15–4:00", a:"West Village & Meatpacking stroll", n:"Bleecker St, Christopher St", q:"Meatpacking District New York"},
       {t:"4:00–5:30", a:"🌳 Walk the High Line → Hudson Yards", steps:["Enter at Gansevoort St (south end)","Walk north ~1.5 mi / 2.5 km","Exit at Hudson Yards (north end)"], q:"High Line New York"},
       {t:"5:30–6:00", a:"🌀 Vessel exterior photos", n:"Shoot up from the plaza", q:"Vessel Hudson Yards"},
-      {t:"6:00 PM", a:"🚇 7 train → Times Sq", steps:["7 train from 34 St–Hudson Yards → Times Sq","Or walk ~25 min"], q:"34 Street Hudson Yards Subway Station"},
-      {t:"6:30 PM", a:"Back to hotel · rest & change", n:"Pack bags", q:"Renaissance New York Times Square Hotel"},
+      {t:"6:00 PM", noimg:true, a:"🚇 7 train → Times Sq", steps:["7 train from 34 St–Hudson Yards → Times Sq","Or walk ~25 min"], q:"34 Street Hudson Yards Subway Station"},
+      {t:"6:30 PM", noimg:true, a:"Back to hotel · rest & change", n:"Pack bags", q:"Renaissance New York Times Square Hotel"},
       {t:"7:45 PM", key:true, booked:true, a:"🏙️ Empire State Building (86F + Express)", n:"12 min walk from hotel · entrance 20 W 34th St · Express lane", q:"Empire State Building"},
       {t:"8:00 PM", a:"86th-floor observatory", n:"Golden hour", q:"Empire State Building"},
       {t:"8:30 PM", key:true, a:"🌅 Sunset", n:""},
