@@ -167,8 +167,11 @@
     transform:perspective(800px) rotateX(var(--rx)) rotateY(var(--ry));
     transform-style:preserve-3d;transition:transform .3s ease;will-change:transform;}
   .tl-card.booked .tc, .tl-card.booked .thumb{position:relative;z-index:3;}
-  .tl-card.booked .tl-act{text-shadow:0 1px 2px rgba(0,0,0,.6);}
-  /* the simple holographic rainbow wash */
+  .tl-card.booked .tl-act{text-shadow:0 1px 2px rgba(0,0,0,.7);}
+  /* dark scrim behind the text so it stays readable over the holo */
+  .tl-card.booked .tc::after{content:"";position:absolute;z-index:-1;inset:-6px -10px;border-radius:11px;
+    background:linear-gradient(90deg, rgba(6,7,12,.88) 0%, rgba(6,7,12,.66) 48%, rgba(6,7,12,.2) 82%, transparent 100%);}
+  /* base holographic rainbow wash */
   .tl-card.booked::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
     background:linear-gradient(115deg,
       var(--sunpillar-1),var(--sunpillar-2),var(--sunpillar-3),var(--sunpillar-4),var(--sunpillar-5),var(--sunpillar-6),var(--sunpillar-1));
@@ -176,10 +179,17 @@
     mix-blend-mode:color-dodge;
     opacity:calc(.16 + var(--card-opacity)*.5);
     animation:holoGradient 7s ease infinite;transition:opacity .3s ease;}
-  .tl-card.booked.lit::before, html.motion-on .tl-card.booked::before{animation:none;
-    background-position:var(--background-x) var(--background-y);}
+  /* foil sparkle mask layer (Option A) */
+  .tl-card.booked.foil::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;
+    background:linear-gradient(115deg,
+      var(--sunpillar-1),var(--sunpillar-2),var(--sunpillar-3),var(--sunpillar-4),var(--sunpillar-5),var(--sunpillar-6),var(--sunpillar-1));
+    background-size:300% 300%;background-position:var(--background-x) var(--background-y);
+    -webkit-mask-image:url("img/foil-mask.png");mask-image:url("img/foil-mask.png");
+    -webkit-mask-size:200px;mask-size:200px;-webkit-mask-repeat:repeat;mask-repeat:repeat;
+    mix-blend-mode:color-dodge;filter:contrast(1.6) saturate(1.4) brightness(1.05);
+    opacity:calc(.10 + var(--card-opacity)*.6);animation:holoGradient 7s ease infinite;transition:opacity .3s ease;}
   @keyframes holoGradient{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-  @media (prefers-reduced-motion: reduce){ .tl-card.booked::before{animation:none;} }
+  @media (prefers-reduced-motion: reduce){ .tl-card.booked::before,.tl-card.booked.foil::after{animation:none;} }
   #motion-row{text-align:center;padding:2px 16px 0;}
   .motionbtn{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--lav);background:var(--card);border:1px solid var(--gold-soft);border-radius:30px;padding:7px 15px;cursor:pointer;}
 
@@ -710,7 +720,7 @@ function renderDay(id, autoscroll){
         ? `<div class="meal-cta">🔖 Reserved · tap for details ›</div>`
         : `<div class="meal-cta"><span class="opts">${g.opts.map(o=>`<i>${o.b}</i>`).join("")}</span> ${g.opts.length} options · tap to choose ›</div>`;
       return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
-        <div class="tl-card meal ${it.key?'key':''}${it.booked?' booked':''}" data-meal="${it.meal}"><div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>${cta}</div></div></div>`;
+        <div class="tl-card meal ${it.key?'key':''}${it.booked?' booked foil':''}" data-meal="${it.meal}"><div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>${cta}</div></div></div>`;
     }
     const loc = Q2LOC[it.q];
     const wiki = loc ? loc.wiki : "";
@@ -726,7 +736,7 @@ function renderDay(id, autoscroll){
       </div>${thumb}</div></div>`;
     }
     return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
-      <div class="tl-card ${it.key?'key':''}${it.booked?' booked':''}"><div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>
+      <div class="tl-card ${it.key?'key':''}${it.booked?' booked foil':''}"><div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>
         ${it.n?`<div class="tl-note">${it.n}</div>`:""}${it.q?`<div style="margin-top:6px">${mapLinkHTML(it.q)}</div>`:""}</div>${thumb}</div></div>`;
   }).join("") + `</div><div class="spacer"></div>`;
   $("#day-content").innerHTML = html;
