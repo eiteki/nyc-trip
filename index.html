@@ -120,6 +120,9 @@
   .tl-item:last-child::before{display:none;}
   .tl-dot{position:absolute;left:2px;top:5px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:2px solid var(--gold-soft);z-index:1;}
   .tl-item.key .tl-dot{background:var(--holo);border:0;box-shadow:0 0 0 4px rgba(196,181,247,.16);}
+  .tl-item.now .tl-dot{background:var(--mint);border:0;box-shadow:0 0 0 5px rgba(159,240,181,.22);}
+  .tl-item.now .tl-card{border-color:var(--mint);box-shadow:0 0 0 1px var(--mint),0 0 18px rgba(159,240,181,.22);}
+  .tl-item.now .tl-time::after{content:" • NOW";color:var(--mint);font-weight:700;}
   .tl-time{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;letter-spacing:.02em;color:var(--lav);}
   .tl-card{display:flex;gap:11px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 13px;margin:4px 0 14px;}
   .tl-card.key{border-color:var(--gold-soft);background:linear-gradient(120deg,rgba(196,181,247,.10),rgba(159,240,181,.04) 70%,var(--card));}
@@ -142,7 +145,7 @@
   .reminders li{font-size:13px;margin-bottom:5px;color:var(--ink-dim);}
 
   /* ---------- Day selector ---------- */
-  .daybar{display:flex;gap:8px;overflow-x:auto;padding:14px 16px 6px;scrollbar-width:none;}
+  .daybar{display:flex;gap:8px;justify-content:center;overflow-x:auto;padding:14px 16px 6px;scrollbar-width:none;}
   .daybar::-webkit-scrollbar{display:none;}
   .daychip{flex:0 0 auto;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;letter-spacing:.02em;padding:8px 16px;border-radius:30px;border:1px solid var(--line);background:var(--card);color:var(--ink-dim);text-transform:uppercase;transition:.2s;}
   .daychip.active{background:var(--holo);color:#0a0a12;border-color:transparent;}
@@ -176,6 +179,11 @@
   .legend{display:flex;flex-wrap:wrap;gap:9px;margin-top:10px;}
   .legend .lg{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-dim);font-family:'Space Grotesk',sans-serif;letter-spacing:.03em;text-transform:uppercase;}
   .legend .dot{width:11px;height:11px;border-radius:50%;border:1.5px solid rgba(0,0,0,.5);}
+  .mapfilter{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px;}
+  .fchip{display:inline-flex;align-items:center;gap:6px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:11.5px;letter-spacing:.03em;text-transform:uppercase;padding:6px 12px;border-radius:30px;border:1px solid var(--line);background:var(--card);color:var(--ink-dim);cursor:pointer;transition:.15s;}
+  .fchip .dot{width:9px;height:9px;border-radius:50%;}
+  .fchip.active{background:var(--holo);color:#0a0a12;border-color:transparent;}
+  .fchip.active .dot{display:none;}
   .leaflet-popup-content-wrapper{background:var(--card);color:var(--ink);border:1px solid var(--gold-soft);border-radius:12px;}
   .leaflet-popup-tip{background:var(--card);border:1px solid var(--gold-soft);}
   .leaflet-popup-content{margin:11px 13px;font-family:'Inter',sans-serif;min-width:170px;}
@@ -308,11 +316,12 @@
   <div class="maptop">
     <div class="sec-head" style="margin:0"><h2 style="font-size:20px">The City Map</h2><span class="tag">All Pins</span></div>
     <p class="faint" style="margin:6px 0 0">Tap a pin for a photo &amp; directions · zoom in to reveal names.</p>
-    <div class="legend">
-      <span class="lg"><span class="dot" style="background:#9ff0b5"></span>Attraction</span>
-      <span class="lg"><span class="dot" style="background:#efb3e4"></span>Food</span>
-      <span class="lg"><span class="dot" style="background:#8fa8f5"></span>Transit</span>
-      <span class="lg"><span class="dot" style="background:#c4b5f7"></span>Hotel</span>
+    <div class="mapfilter" id="mapfilter">
+      <button class="fchip active" data-cat="all">All</button>
+      <button class="fchip" data-cat="attraction"><span class="dot" style="background:#9ff0b5"></span>Sights</button>
+      <button class="fchip" data-cat="food"><span class="dot" style="background:#efb3e4"></span>Food</button>
+      <button class="fchip" data-cat="transit"><span class="dot" style="background:#8fa8f5"></span>Transit</button>
+      <button class="fchip" data-cat="hotel"><span class="dot" style="background:#c4b5f7"></span>Hotel</button>
     </div>
   </div>
   <div id="map"></div>
@@ -357,7 +366,7 @@
 const gmap = q => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
 
 const LOCATIONS = [
-  {n:"Renaissance Times Square Hotel", c:"hotel", q:"Renaissance New York Times Square Hotel 714 7th Avenue", lat:40.7596, lng:-73.9845, wiki:""},
+  {n:"Renaissance Times Square Hotel", c:"hotel", q:"Renaissance New York Times Square Hotel 714 7th Avenue", lat:40.7596, lng:-73.9845, wiki:"Times Square"},
   {n:"Times Square", c:"attraction", q:"Times Square New York", lat:40.7580, lng:-73.9855, wiki:"Times Square"},
   {n:"New York Public Library", c:"attraction", q:"New York Public Library Stephen A Schwarzman Building", lat:40.7532, lng:-73.9822, wiki:"New York Public Library Main Branch"},
   {n:"Bryant Park", c:"attraction", q:"Bryant Park New York", lat:40.7536, lng:-73.9832, wiki:"Bryant Park"},
@@ -393,23 +402,24 @@ const LOCATIONS = [
   {n:"Sarabeth's Central Park South", c:"food", q:"Sarabeth's Central Park South", lat:40.7660, lng:-73.9800, wiki:"Sarabeth's"},
   {n:"Bluestone Lane (Bryant Park)", c:"food", q:"Bluestone Lane Bryant Park", lat:40.7540, lng:-73.9840, wiki:"Bluestone Lane"},
   {n:"Cote Korean Steakhouse", c:"food", q:"Cote Korean Steakhouse New York", lat:40.7409, lng:-73.9911, wiki:"Cote (restaurant)"},
-  {n:"Jongro BBQ", c:"food", q:"Jongro BBQ 32nd Street", lat:40.7479, lng:-73.9858, wiki:""},
+  {n:"Jongro BBQ", c:"food", q:"Jongro BBQ 32nd Street", lat:40.7479, lng:-73.9858, wiki:"Korean barbecue"},
   {n:"BCD Tofu House", c:"food", q:"BCD Tofu House 32nd Street", lat:40.7478, lng:-73.9862, wiki:"BCD Tofu House"},
   {n:"Junior's Cheesecake", c:"food", q:"Junior's Restaurant Times Square 45th Street", lat:40.7587, lng:-73.9852, wiki:"Junior's Restaurant"},
   {n:"Levain Bakery (W 46th)", c:"food", q:"Levain Bakery West 46th Street", lat:40.7595, lng:-73.9870, wiki:"Levain Bakery"},
   {n:"Stone Street", c:"food", q:"Stone Street New York", lat:40.7042, lng:-74.0113, wiki:"Stone Street (Manhattan)"},
-  {n:"Celestine (DUMBO)", c:"food", q:"Celestine John Street Brooklyn", lat:40.7026, lng:-73.9890, wiki:""},
+  {n:"Celestine (DUMBO)", c:"food", q:"Celestine John Street Brooklyn", lat:40.7026, lng:-73.9890, wiki:"Dumbo, Brooklyn"},
   {n:"The River Café", c:"food", q:"The River Cafe Brooklyn", lat:40.7036, lng:-73.9956, wiki:"The River Café"},
-  {n:"Cecconi's DUMBO", c:"food", q:"Cecconi's DUMBO Brooklyn", lat:40.7033, lng:-73.9901, wiki:""},
+  {n:"Cecconi's DUMBO", c:"food", q:"Cecconi's DUMBO Brooklyn", lat:40.7033, lng:-73.9901, wiki:"Empire Stores"},
   {n:"Katz's Delicatessen", c:"food", q:"Katz's Delicatessen 205 East Houston Street", lat:40.7223, lng:-73.9874, wiki:"Katz's Delicatessen"},
   // Transit
-  {n:"Times Sq–42 St Station", c:"transit", q:"Times Square 42 Street Subway Station", lat:40.7557, lng:-73.9870, wiki:""},
-  {n:"South Ferry Station", c:"transit", q:"South Ferry Subway Station Manhattan", lat:40.7020, lng:-74.0132, wiki:""},
-  {n:"34 St–Herald Sq Station", c:"transit", q:"34th Street Herald Square Subway Station", lat:40.7497, lng:-73.9876, wiki:""},
-  {n:"34 St–Hudson Yards Station", c:"transit", q:"34 Street Hudson Yards Subway Station", lat:40.7559, lng:-74.0014, wiki:""},
+  {n:"Times Sq–42 St Station", c:"transit", q:"Times Square 42 Street Subway Station", lat:40.7557, lng:-73.9870, wiki:"Times Square–42nd Street/Port Authority Bus Terminal (New York City Subway)"},
+  {n:"South Ferry Station", c:"transit", q:"South Ferry Subway Station Manhattan", lat:40.7020, lng:-74.0132, wiki:"South Ferry/Whitehall Street station"},
+  {n:"34 St–Herald Sq Station", c:"transit", q:"34th Street Herald Square Subway Station", lat:40.7497, lng:-73.9876, wiki:"34th Street–Herald Square station"},
+  {n:"34 St–Hudson Yards Station", c:"transit", q:"34 Street Hudson Yards Subway Station", lat:40.7559, lng:-74.0014, wiki:"34th Street–Hudson Yards station"},
   {n:"Newark Liberty Airport (EWR)", c:"transit", q:"Newark Liberty International Airport", lat:40.6895, lng:-74.1745, wiki:"Newark Liberty International Airport"},
 ];
 const Q2WIKI = {}; LOCATIONS.forEach(l=>{ if(l.wiki) Q2WIKI[l.q]=l.wiki; });
+const Q2LOC = {}; LOCATIONS.forEach(l=>{ Q2LOC[l.q]=l; });
 
 const WEATHER = {
   1:{date:"2026-06-27", icon:"⛅", hi:84, lo:70, rain:55, desc:"Warm, humid, scattered showers"},
@@ -432,7 +442,7 @@ const FOOD = [
   // 2 — Day 1 K-town dinner
   {day:1, icon:"🍖", title:"Koreatown Dinner", when:"Sat ~6 PM · pre-Wicked", opts:[
     {b:"A", name:"Cote Korean Steakhouse", meta:"1-Michelin-star KBBQ", price:"$85+ prix fixe", note:"Reserve ahead — may be full.", q:"Cote Korean Steakhouse New York", wiki:"Cote (restaurant)"},
-    {b:"B", name:"Jongro BBQ", meta:"Traditional charcoal grill", price:"$50–70", note:"No reservations; 30–60 min Sat wait.", q:"Jongro BBQ 32nd Street", wiki:""},
+    {b:"B", name:"Jongro BBQ", meta:"Traditional charcoal grill", price:"$50–70", note:"No reservations; 30–60 min Sat wait.", q:"Jongro BBQ 32nd Street", wiki:"Korean barbecue"},
     {b:"C", name:"BCD Tofu House", meta:"Korean tofu stew", price:"$25–35", note:"Quick, light, comfy — top pre-show pick.", q:"BCD Tofu House 32nd Street", wiki:"BCD Tofu House"},
   ]},
   // 3 — Day 1 dessert
@@ -455,9 +465,9 @@ const FOOD = [
   ]},
   // 6 — Day 2 DUMBO dinner
   {day:2, icon:"⭐", title:"DUMBO Dinner", when:"Sun ~7:30 PM · the big one", opts:[
-    {b:"A", name:"Celestine", meta:"Mediterranean · two-bridge window view", price:"$150–200 / two", note:"Rave reviews; reserve ahead.", q:"Celestine John Street Brooklyn", wiki:""},
+    {b:"A", name:"Celestine", meta:"Mediterranean · two-bridge window view", price:"$150–200 / two", note:"Rave reviews; reserve ahead.", q:"Celestine John Street Brooklyn", wiki:"Dumbo, Brooklyn"},
     {b:"B", name:"The River Café", meta:"Michelin fine dining", price:"$400+ / two", note:"Dress code; must reserve.", q:"The River Cafe Brooklyn", wiki:"The River Café"},
-    {b:"C", name:"Cecconi's DUMBO", meta:"Italian at Empire Stores", price:"$120–160 / two", note:"Relaxed & cozy.", q:"Cecconi's DUMBO Brooklyn", wiki:""},
+    {b:"C", name:"Cecconi's DUMBO", meta:"Italian at Empire Stores", price:"$120–160 / two", note:"Relaxed & cozy.", q:"Cecconi's DUMBO Brooklyn", wiki:"Empire Stores"},
   ]},
   // 7 — Day 3 breakfast
   {day:3, icon:"🥐", title:"Breakfast", when:"Mon ~9 AM · light (save room for Keens)", opts:[
@@ -600,28 +610,48 @@ const PREP = [
    PHOTOS (Wikipedia REST summary, cached) + lazy loader
    ============================================================ */
 const photoCache = JSON.parse(localStorage.getItem("nyc-photos")||"{}");
-async function getPhoto(wiki){
-  if(!wiki) return null;
-  if(wiki in photoCache) return photoCache[wiki];
+function savePhotoCache(){ try{ localStorage.setItem("nyc-photos",JSON.stringify(photoCache)); }catch(e){} }
+function attr(s){ return (s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;"); }
+// Tier 1: exact Wikipedia page title
+async function summaryThumb(wiki){
   try{
     const r = await fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(wiki.replace(/ /g,"_")));
-    if(!r.ok){ photoCache[wiki]=null; localStorage.setItem("nyc-photos",JSON.stringify(photoCache)); return null; }
+    if(!r.ok) return null;
     const j = await r.json();
-    let src = (j.thumbnail && j.thumbnail.source) || null;
-    if(src) src = src.replace(/\/\d+px-/,"/640px-");
-    photoCache[wiki]=src; localStorage.setItem("nyc-photos",JSON.stringify(photoCache));
-    return src;
+    let s = (j.thumbnail && j.thumbnail.source) || null;
+    return s ? s.replace(/\/\d+px-/,"/640px-") : null;
   }catch(e){ return null; }
+}
+// Tier 2: Wikipedia full-text search → top result's lead image
+async function searchThumb(query){
+  try{
+    const u = "https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrlimit=1&gsrnamespace=0&gsrsearch="
+      + encodeURIComponent(query) + "&prop=pageimages&piprop=thumbnail&pithumbsize=640";
+    const r = await fetch(u); if(!r.ok) return null;
+    const j = await r.json();
+    const pages = j.query && j.query.pages; if(!pages) return null;
+    for(const k in pages){ const t = pages[k].thumbnail; if(t && t.source) return t.source; }
+    return null;
+  }catch(e){ return null; }
+}
+async function resolvePhoto(key, wiki, search, img){
+  if(img) return img;                       // Tier 0: pinned direct URL
+  if(key in photoCache) return photoCache[key];
+  let src = null;
+  if(wiki) src = await summaryThumb(wiki);   // Tier 1: exact page
+  if(!src && search) src = await searchThumb(search); // Tier 2: search
+  photoCache[key] = src; savePhotoCache();
+  return src;
 }
 const photoIO = new IntersectionObserver((entries)=>{
   entries.forEach(async e=>{
     if(!e.isIntersecting) return;
     const el = e.target; photoIO.unobserve(el);
-    const url = await getPhoto(el.dataset.wiki);
+    const url = await resolvePhoto(el.dataset.pkey, el.dataset.wiki||"", el.dataset.search||"", el.dataset.img||"");
     if(url){ el.style.backgroundImage = `url("${url}")`; el.classList.add("has-photo"); el.textContent=""; }
   });
 },{rootMargin:"250px"});
-function observePhotos(root){ (root||document).querySelectorAll(".thumb[data-wiki]").forEach(el=>photoIO.observe(el)); }
+function observePhotos(root){ (root||document).querySelectorAll(".thumb[data-pkey]").forEach(el=>photoIO.observe(el)); }
 function firstEmoji(s){ const m=(s||"").match(/\p{Extended_Pictographic}/u); return m?m[0]:"🍽️"; }
 
 /* ============================================================
@@ -646,10 +676,11 @@ function weatherHTML(d){
 function renderDayBar(active){
   $("#daybar").innerHTML = DAYS.map(d =>
     `<button class="daychip ${d.id===active?'active':''}" data-day="${d.id}">${d.label}<small>${d.date}</small></button>`).join("");
-  document.querySelectorAll(".daychip").forEach(b => b.onclick = () => renderDay(+b.dataset.day));
+  document.querySelectorAll(".daychip").forEach(b => b.onclick = () => renderDay(+b.dataset.day, true));
 }
-function renderDay(id){
-  const d = DAYS.find(x=>x.id===id);
+let curDay = 1;
+function renderDay(id, autoscroll){
+  const d = DAYS.find(x=>x.id===id); curDay = id;
   renderDayBar(id);
   let html = `<div class="sec-head"><h2>${d.title}</h2></div>
     <p class="lead">${d.theme}</p>${weatherHTML(id)}
@@ -666,8 +697,12 @@ function renderDay(id){
       return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
         <div class="tl-card meal ${it.key?'key':''}" data-meal="${it.meal}"><div class="tc"><div class="tl-act">${it.a}</div>${cta}</div></div></div>`;
     }
-    const wiki = Q2WIKI[it.q] || "";
-    const thumb = wiki ? `<div class="thumb" data-wiki="${wiki}">${firstEmoji(it.a)}</div>` : "";
+    const loc = Q2LOC[it.q];
+    const wiki = loc ? loc.wiki : "";
+    const search = loc ? loc.n : (it.q || "");
+    const img = (loc && loc.img) ? loc.img : "";
+    const pkey = img || wiki || search;
+    const thumb = it.q ? `<div class="thumb" data-pkey="${attr(pkey)}" data-wiki="${attr(wiki)}" data-search="${attr(search)}" data-img="${attr(img)}">${firstEmoji(it.a)}</div>` : "";
     return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
       <div class="tl-card ${it.key?'key':''}"><div class="tc"><div class="tl-act">${it.a}</div>
         ${it.n?`<div class="tl-note">${it.n}</div>`:""}${it.q?`<div style="margin-top:6px">${mapLinkHTML(it.q)}</div>`:""}</div>${thumb}</div></div>`;
@@ -675,7 +710,34 @@ function renderDay(id){
   $("#day-content").innerHTML = html;
   document.querySelectorAll("#day-content .tl-card.meal").forEach(c => c.onclick = () => openMeal(+c.dataset.meal));
   observePhotos($("#day-content"));
-  window.scrollTo({top:0,behavior:"smooth"});
+  highlightNow(d, autoscroll);
+}
+
+/* Parse each item's start time into minutes-from-midnight, chronologically.
+   Handles "7:18 AM", "9:00–9:30" (no AM/PM), "~10:45" by staying monotonic. */
+function parseSeq(items){
+  let last = -1; const out = [];
+  items.forEach(it => {
+    const tok = (it.t||"").replace(/~/g,"").split(/[–—-]/)[0].trim();
+    const m = tok.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+    if(!m){ out.push(last>=0?last:0); return; }
+    let h=+m[1], min=+m[2]; const ap = m[3] ? m[3].toUpperCase() : null;
+    let val;
+    if(ap){ h=h%12; if(ap==="PM") h+=12; val=h*60+min; }
+    else { const am=(h%12)*60+min, pm=((h%12)+12)*60+min; val = (am>=last) ? am : (pm>=last ? pm : am); }
+    last = val; out.push(val);
+  });
+  return out;
+}
+function highlightNow(d, autoscroll){
+  const mins = parseSeq(d.items);
+  const now = new Date(); const nowM = now.getHours()*60 + now.getMinutes();
+  let bi=0, bd=1e9;
+  mins.forEach((v,i)=>{ const dd=Math.abs(v-nowM); if(dd<bd){ bd=dd; bi=i; } });
+  const items = document.querySelectorAll("#day-content .tl-item");
+  if(items[bi]) items[bi].classList.add("now");
+  if(autoscroll && items[bi]) items[bi].scrollIntoView({behavior:"smooth", block:"center"});
+  else window.scrollTo({top:0, behavior:"smooth"});
 }
 
 /* ---- Food tab ---- */
@@ -706,9 +768,13 @@ function openMeal(i){
   const g = FOOD[i];
   $("#sheet-title").textContent = g.title;
   $("#sheet-sub").textContent = g.when;
-  $("#sheet-body").innerHTML = g.opts.map(o => `
+  $("#sheet-body").innerHTML = g.opts.map(o => {
+    const canPhoto = !!o.q;            // real venue (has a maps query)
+    const wiki = o.wiki||"", search = o.name||"", img = o.img||"";
+    const pkey = img||wiki||search;
+    return `
     <div class="sopt ${o.confirmed?'confirmed':''}">
-      <div class="sopt-photo placeholder ${o.wiki?'':'noimg'}" ${o.wiki?`data-wiki="${o.wiki}"`:""} data-emoji="${firstEmoji(g.icon+o.name)}">
+      <div class="sopt-photo placeholder" ${canPhoto?`data-pkey="${attr(pkey)}" data-wiki="${attr(wiki)}" data-search="${attr(search)}" data-img="${attr(img)}"`:""} data-emoji="${firstEmoji(g.icon+o.name)}">
         <div class="sopt-badge">${o.b}</div>
       </div>
       <div class="sopt-body">
@@ -716,13 +782,14 @@ function openMeal(i){
         <div class="sopt-meta">${o.meta} · <span class="sopt-price">${o.price}</span></div>
         ${o.note?`<div class="sopt-note">${o.note}</div>`:""}
         ${o.q?`<div class="sopt-link">${mapLinkHTML(o.q)}</div>`:""}
-      </div></div>`).join("");
+      </div></div>`;
+  }).join("");
   $("#sheet").classList.add("open");
   $("#sheet-backdrop").classList.add("open");
   $("#sheet-body").scrollTop = 0;
   // resolve photos for this sheet
-  $("#sheet-body").querySelectorAll(".sopt-photo[data-wiki]").forEach(async el=>{
-    const url = await getPhoto(el.dataset.wiki);
+  $("#sheet-body").querySelectorAll(".sopt-photo[data-pkey]").forEach(async el=>{
+    const url = await resolvePhoto(el.dataset.pkey, el.dataset.wiki||"", el.dataset.search||"", el.dataset.img||"");
     if(url){ el.style.backgroundImage=`url("${url}")`; el.classList.remove("placeholder"); el.classList.add("has-photo"); }
   });
 }
@@ -749,31 +816,44 @@ function renderPrep(){
 }
 
 /* ---- Map ---- */
-let map, mapInit=false;
+let map, mapInit=false, markerRecs=[];
 const CAT_COLOR = {attraction:"#9ff0b5", food:"#efb3e4", transit:"#8fa8f5", hotel:"#c4b5f7"};
 const LABEL_ZOOM = 14;
+function setFilter(cat){
+  markerRecs.forEach(r=>{
+    const vis = cat==="all" || r.cat===cat;
+    if(vis){ if(!map.hasLayer(r.marker)) r.marker.addTo(map); }
+    else if(map.hasLayer(r.marker)) map.removeLayer(r.marker);
+  });
+}
 function initMap(){
   if(mapInit) return; mapInit = true;
   map = L.map("map",{zoomControl:true, attributionControl:true}).setView([40.722,-74.00],12);
   L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{
     attribution:'© OpenStreetMap, © CARTO', maxZoom:19, subdomains:"abcd"}).addTo(map);
-  const bounds = [];
+  const bounds = []; markerRecs = [];
   LOCATIONS.forEach(loc => {
     const color = CAT_COLOR[loc.c] || "#c4b5f7";
     const m = L.circleMarker([loc.lat,loc.lng],{radius:7, color:"#0a0a12", weight:2, fillColor:color, fillOpacity:1}).addTo(map);
     m.bindTooltip(loc.n, {permanent:true, direction:"top", className:"pin-label", offset:[0,-5]});
-    m.bindPopup(`${loc.wiki?`<div class="pop-photo" data-wiki="${loc.wiki}"></div>`:""}
+    m.bindPopup(`<div class="pop-photo" data-pkey="${attr((loc.img||loc.wiki||loc.n))}" data-wiki="${attr(loc.wiki||"")}" data-search="${attr(loc.n)}" data-img="${attr(loc.img||"")}"></div>
       <div class="pop-t">${loc.n}</div><div class="pop-c">${loc.c}</div>
       <a class="pop-link" target="_blank" rel="noopener" href="${gmap(loc.q||loc.n)}">📍 Open in Google Maps →</a>`);
+    markerRecs.push({marker:m, cat:loc.c});
     bounds.push([loc.lat,loc.lng]);
+  });
+  document.querySelectorAll("#mapfilter .fchip").forEach(b => b.onclick = () => {
+    document.querySelectorAll("#mapfilter .fchip").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active"); setFilter(b.dataset.cat);
   });
   map.fitBounds(bounds,{padding:[34,34]});
   const updateLabels = () => document.getElementById("map").classList.toggle("show-labels", map.getZoom() >= LABEL_ZOOM);
   map.on("zoomend", updateLabels); updateLabels();
   map.on("popupopen", e=>{
-    const node = e.popup.getElement().querySelector(".pop-photo[data-wiki]");
+    const node = e.popup.getElement().querySelector(".pop-photo[data-pkey]");
     if(node && !node.dataset.done){ node.dataset.done="1";
-      getPhoto(node.dataset.wiki).then(u=>{ if(u){ node.style.backgroundImage=`url("${u}")`; node.classList.add("has-photo"); } });
+      resolvePhoto(node.dataset.pkey, node.dataset.wiki||"", node.dataset.search||"", node.dataset.img||"")
+        .then(u=>{ if(u){ node.style.backgroundImage=`url("${u}")`; node.classList.add("has-photo"); } });
     }
   });
   setTimeout(()=>map.invalidateSize(), 200);
@@ -786,7 +866,8 @@ function show(view){
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
   $("#view-"+view).classList.add("active");
   document.querySelectorAll("nav.tabbar button").forEach(b=>b.classList.toggle("active", b.dataset.view===view));
-  if(view==="map"){ initMap(); setTimeout(()=>map&&map.invalidateSize(),120); }
+  if(view==="map"){ initMap(); setTimeout(()=>map&&map.invalidateSize(),120); window.scrollTo({top:0,behavior:"instant"}); return; }
+  if(view==="days"){ window.scrollTo({top:0,behavior:"instant"}); renderDay(curDay, true); return; }
   window.scrollTo({top:0,behavior:"instant"});
 }
 document.querySelectorAll("nav.tabbar button").forEach(b => b.onclick = () => show(b.dataset.view));
