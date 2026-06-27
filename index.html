@@ -39,7 +39,13 @@
     --holo:linear-gradient(100deg,#9ff0b5 0%,#c1e7cb 18%,#c8bdf7 46%,#ecb8e6 72%,#b9c4f7 100%);
     --nav-h:64px;
     --radius:16px;
-    --hx:0%; --hy:0%; --rx:0deg; --ry:0deg; --pmag:0;   /* pointer/gyroscope-driven */
+    /* reverse-holo interaction vars (pointer / gyroscope driven) */
+    --rx:0deg; --ry:0deg;
+    --pointer-x:50%; --pointer-y:50%;
+    --pointer-from-left:.5; --pointer-from-top:.5; --pointer-from-center:0;
+    --card-opacity:0;
+    --sunpillar-1:hsl(2,100%,73%); --sunpillar-2:hsl(53,100%,69%); --sunpillar-3:hsl(93,100%,69%);
+    --sunpillar-4:hsl(176,100%,76%); --sunpillar-5:hsl(228,100%,74%); --sunpillar-6:hsl(283,100%,73%);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
@@ -141,45 +147,35 @@
   /* ---------- Holographic "headliner" cards (booked main events) ---------- */
   .headliner{display:inline-block;font-family:'Space Grotesk',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:2px 9px;border-radius:20px;margin-bottom:6px;background:var(--holo);color:#0a0a12;box-shadow:0 0 11px rgba(196,181,247,.4);}
 
-  /* ===== Reverse-holo (non-rare): glitter + faint foil + moving glare ===== */
+  /* ===== Reverse Holo (non-rare) — faithful to pokemon-cards-css. Clean & readable at rest; sheen only on point/tilt ===== */
   .tl-card.booked{position:relative;overflow:hidden;border:1px solid #2b2b37;border-radius:12px;
     background:linear-gradient(135deg,#0b0c11,#15151d);
-    box-shadow:0 10px 28px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04);
-    transform-style:preserve-3d;transition:transform .18s ease-out;will-change:transform;}
+    box-shadow:0 10px 26px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
+    transform:perspective(760px) rotateX(var(--rx)) rotateY(var(--ry));
+    transform-style:preserve-3d;transition:transform .3s ease, box-shadow .3s ease;will-change:transform;}
   .tl-card.booked .tc, .tl-card.booked .thumb{position:relative;z-index:3;}
-  /* faint rainbow foil */
+  /* SHINE — holographic foil sheen tracking the pointer/tilt (grayscale gradients over rainbow foil) */
   .tl-card.booked::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
-    background:linear-gradient(115deg,#9ff0b5,#8fa8f5,#c4b5f7,#efb3e4,#9ff0b5,#8fa8f5,#c4b5f7);
-    background-size:300% 300%;background-position:50% 50%;mix-blend-mode:color-dodge;opacity:.24;
-    animation:holoGradient 7s ease infinite;}
-  /* glitter sparkle field (the reverse-holo signature) */
-  .tl-card.booked::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
     background-image:
-      radial-gradient(rgba(255,255,255,.9) 0 .6px, transparent 1.2px),
-      radial-gradient(rgba(255,255,255,.6) 0 .5px, transparent 1.1px),
-      radial-gradient(rgba(190,230,255,.6) 0 .5px, transparent 1.1px);
-    background-size:5px 5px,8px 8px,12px 12px;background-position:0 0,2px 3px,5px 1px;
-    mix-blend-mode:color-dodge;opacity:.22;animation:sparkleDrift 8s linear infinite;}
-  /* moving glare highlight */
-  .tl-card.booked .glare{position:absolute;inset:-1px;z-index:2;pointer-events:none;border-radius:inherit;
-    background:radial-gradient(circle at calc(50% + var(--hx)) calc(50% + var(--hy)),
-      rgba(255,255,255,.5), rgba(255,255,255,.07) 30%, transparent 56%);
-    mix-blend-mode:overlay;opacity:.15;transition:opacity .2s ease;}
-  @keyframes holoGradient{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-  @keyframes sparkleDrift{0%{background-position:0 0,2px 3px,5px 1px}100%{background-position:0 15px,2px 18px,5px 13px}}
-  /* active — pointer (desktop) or gyroscope (mobile) drives the look */
-  .tl-card.booked.lit, html.motion-on .tl-card.booked{
-    transform:perspective(720px) rotateX(var(--rx)) rotateY(var(--ry));}
-  .tl-card.booked.lit::before, html.motion-on .tl-card.booked::before{
-    animation:none;background-position:calc(50% + var(--hx)) calc(50% + var(--hy));opacity:calc(.3 + var(--pmag)*.42);}
-  .tl-card.booked.lit::after, html.motion-on .tl-card.booked::after{
-    animation:none;
-    background-position:calc(0px + var(--hx)) calc(0px + var(--hy)),calc(2px + var(--hx)) calc(3px + var(--hy)),calc(5px + var(--hx)) calc(1px + var(--hy));
-    opacity:calc(.26 + var(--pmag)*.55);}
-  .tl-card.booked.lit .glare, html.motion-on .tl-card.booked .glare{opacity:calc(.14 + var(--pmag)*.55);}
+      radial-gradient(circle at var(--pointer-x) var(--pointer-y), #fff 5%, #000 50%, #fff 80%),
+      linear-gradient(-45deg, #000 15%, #fff, #000 85%),
+      repeating-linear-gradient(-42deg,
+        var(--sunpillar-1),var(--sunpillar-2),var(--sunpillar-3),var(--sunpillar-4),var(--sunpillar-5),var(--sunpillar-6),var(--sunpillar-1) 60%);
+    background-blend-mode:soft-light, difference;
+    background-size:120% 120%, 200% 200%, 180% 180%;
+    background-position:center, calc(100%*var(--pointer-from-left)) calc(100%*var(--pointer-from-top)), center;
+    filter:brightness(.6) contrast(1.45) saturate(1);
+    mix-blend-mode:color-dodge;
+    opacity:calc(1.5*var(--card-opacity) - var(--pointer-from-center));
+    transition:opacity .3s ease;}
+  /* GLARE — soft light-spot following the pointer/tilt */
+  .tl-card.booked .glare{position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;
+    background-image:radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y),
+      hsla(0,0%,100%,.7) 10%, hsla(0,0%,100%,.4) 22%, hsla(0,0%,0%,.6) 90%);
+    mix-blend-mode:overlay;filter:brightness(.85) contrast(1.3);
+    opacity:calc(var(--card-opacity)*.85);transition:opacity .3s ease;}
   #motion-row{text-align:center;padding:2px 16px 0;}
   .motionbtn{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--lav);background:var(--card);border:1px solid var(--gold-soft);border-radius:30px;padding:7px 15px;cursor:pointer;}
-  @media (prefers-reduced-motion: reduce){ .tl-card.booked::before,.tl-card.booked::after{animation:none;} }
 
   .reminders{position:relative;background:var(--card);border:1px solid #4a2e3e;border-radius:var(--radius);padding:13px 16px;margin-bottom:14px;overflow:hidden;}
   .reminders::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 100% at 0% 0%,rgba(255,122,150,.12),transparent 60%);pointer-events:none;}
@@ -760,21 +756,32 @@ function renderDay(id, autoscroll){
 }
 
 /* ===== Reverse-holo interactivity: pointer (desktop) + gyroscope (mobile) ===== */
+function setCardVars(s, px, py){
+  const fromCenter = Math.min(1, Math.hypot(px-.5, py-.5)/.5);
+  s.setProperty("--pointer-x",(px*100).toFixed(1)+"%");
+  s.setProperty("--pointer-y",(py*100).toFixed(1)+"%");
+  s.setProperty("--pointer-from-left",px.toFixed(3));
+  s.setProperty("--pointer-from-top",py.toFixed(3));
+  s.setProperty("--pointer-from-center",fromCenter.toFixed(3));
+  s.setProperty("--ry",((px-.5)*22).toFixed(2)+"deg");
+  s.setProperty("--rx",(-(py-.5)*18).toFixed(2)+"deg");
+  s.setProperty("--card-opacity","1");
+}
 function wireBookedFX(root){
   (root||document).querySelectorAll(".tl-card.booked").forEach(card=>{
     card.addEventListener("pointermove", ev=>{
       if(ev.pointerType && ev.pointerType!=="mouse") return; // touch → handled by gyroscope
       const r = card.getBoundingClientRect();
-      const gx = ((ev.clientX-r.left)/r.width - .5)*2;   // -1..1
-      const gy = ((ev.clientY-r.top)/r.height - .5)*2;
-      card.style.setProperty("--hx",(gx*30).toFixed(1)+"%");
-      card.style.setProperty("--hy",(gy*30).toFixed(1)+"%");
-      card.style.setProperty("--ry",(gx*9).toFixed(2)+"deg");
-      card.style.setProperty("--rx",(-gy*9).toFixed(2)+"deg");
-      card.style.setProperty("--pmag",Math.min(1,Math.hypot(gx,gy)).toFixed(2));
-      card.classList.add("lit");
+      const px = Math.min(1,Math.max(0,(ev.clientX-r.left)/r.width));
+      const py = Math.min(1,Math.max(0,(ev.clientY-r.top)/r.height));
+      setCardVars(card.style, px, py);
     });
-    card.addEventListener("pointerleave", ()=>card.classList.remove("lit"));
+    card.addEventListener("pointerleave", ()=>{
+      const s=card.style;
+      s.setProperty("--card-opacity","0");
+      s.setProperty("--rx","0deg"); s.setProperty("--ry","0deg");
+      s.setProperty("--pointer-from-center","0");
+    });
   });
 }
 let motionRAF=null, mBeta=0, mGamma=0;
@@ -782,12 +789,9 @@ function applyTilt(){
   motionRAF=null;
   const g = Math.max(-45,Math.min(45,mGamma));
   const b = Math.max(-45,Math.min(45,mBeta-40));
-  const s = document.documentElement.style;
-  s.setProperty("--hx",(g/45*30).toFixed(1)+"%");
-  s.setProperty("--hy",(b/45*30).toFixed(1)+"%");
-  s.setProperty("--ry",(g/45*9).toFixed(2)+"deg");
-  s.setProperty("--rx",(-b/45*9).toFixed(2)+"deg");
-  s.setProperty("--pmag",Math.min(1,Math.hypot(g,b)/45).toFixed(2));
+  const px = g/90 + .5;          // gamma → 0..1
+  const py = b/90 + .5;          // beta  → 0..1
+  setCardVars(document.documentElement.style, px, py);
 }
 function onOrient(e){ if(e.gamma==null && e.beta==null) return; mGamma=e.gamma||0; mBeta=e.beta||0; if(!motionRAF) motionRAF=requestAnimationFrame(applyTilt); }
 function startMotion(){ window.addEventListener("deviceorientation",onOrient,true); document.documentElement.classList.add("motion-on"); const r=document.getElementById("motion-row"); if(r) r.style.display="none"; }
