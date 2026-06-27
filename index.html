@@ -137,6 +137,28 @@
   .meal-cta .opts{display:inline-flex;gap:3px;margin-right:2px;}
   .meal-cta .opts i{width:18px;height:18px;border-radius:6px;background:var(--card-2);border:1px solid var(--gold-soft);font-style:normal;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--lav);}
 
+  /* ---------- Holographic "headliner" cards (booked main events) ---------- */
+  .headliner{display:inline-block;font-family:'Space Grotesk',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:2px 9px;border-radius:20px;margin-bottom:6px;background:var(--holo);color:#0a0a12;}
+  .tl-card.booked{position:relative;overflow:hidden;border:1.5px solid transparent;border-radius:12px;
+    background:linear-gradient(var(--card),var(--card)) padding-box, var(--holo) border-box;
+    box-shadow:0 0 22px rgba(196,181,247,.20);}
+  .tl-card.booked > *{position:relative;z-index:2;}
+  .tl-card.booked::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
+    background:repeating-linear-gradient(115deg,
+      rgba(255,255,255,0) 0%, rgba(159,240,181,.32) 8%, rgba(196,181,247,.32) 16%,
+      rgba(239,179,228,.32) 24%, rgba(143,168,245,.32) 32%, rgba(255,255,255,0) 40%);
+    background-size:250% 250%;mix-blend-mode:color-dodge;opacity:.5;
+    animation:holoShift 7s linear infinite;}
+  .tl-card.booked::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
+    background-image:radial-gradient(rgba(255,255,255,.55) 1px, transparent 1.6px);
+    background-size:9px 9px;mix-blend-mode:overlay;opacity:.14;
+    animation:holoSpark 7s linear infinite;}
+  @keyframes holoShift{0%{background-position:0% 50%}100%{background-position:250% 50%}}
+  @keyframes holoSpark{0%{transform:translate(0,0)}100%{transform:translate(9px,9px)}}
+  @media (prefers-reduced-motion: reduce){
+    .tl-card.booked::before,.tl-card.booked::after{animation:none;}
+  }
+
   .reminders{position:relative;background:var(--card);border:1px solid #4a2e3e;border-radius:var(--radius);padding:13px 16px;margin-bottom:14px;overflow:hidden;}
   .reminders::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 100% at 0% 0%,rgba(255,122,150,.12),transparent 60%);pointer-events:none;}
   .reminders>*{position:relative;}
@@ -503,7 +525,7 @@ const DAYS = [
       {t:"5:45 PM", a:"Up, freshen up, head out", n:"Bring a light layer — cold theatre"},
       {t:"6:00–7:15", a:"🍽️ Koreatown dinner", meal:2},
       {t:"7:30 PM", a:"Walk to Gershwin Theatre", n:"222 W 51 St", q:"Gershwin Theatre New York"},
-      {t:"8:00 PM", key:true, a:"🎭 Wicked — curtain up", n:"One intermission · ~2h45m total", q:"Gershwin Theatre New York"},
+      {t:"8:00 PM", key:true, booked:true, a:"🎭 Wicked — curtain up", n:"One intermission · ~2h45m total", q:"Gershwin Theatre New York"},
       {t:"~10:45", a:"Curtain down", n:"5 min walk back to hotel"},
       {t:"11:00 PM", a:"🍰 Late dessert", meal:3},
       {t:"~11:30", a:"Back to the room", n:""},
@@ -520,7 +542,7 @@ const DAYS = [
       {t:"9:45 AM", a:"1 train (Downtown) → South Ferry", n:"Last stop — can't overshoot · 20–25 min", q:"South Ferry Subway Station Manhattan"},
       {t:"10:15 AM", a:"Battery Park · find Statue City Cruises security", n:"Behind Castle Clinton", q:"Battery Park New York"},
       {t:"10:30 AM", a:"Join the security line", n:"Arrive 30 min early"},
-      {t:"11:00 AM", key:true, a:"🗽 Board the ferry", n:"Ticket time = security time"},
+      {t:"11:00 AM", key:true, booked:true, a:"🗽 Statue of Liberty (Pedestal)", n:"Ticket time = security time · pedestal + museum", q:"Liberty Island New York"},
       {t:"11:30–1:00", a:"Liberty Island: pedestal + museum", n:"Pedestal first (2nd security)", q:"Liberty Island New York"},
       {t:"12:30 PM", a:"🍽️ Lunch", meal:5},
       {t:"1:00–3:00", a:"Ferry to Ellis Island · immigration museum", n:"Free audio guide", q:"Ellis Island National Museum"},
@@ -549,7 +571,7 @@ const DAYS = [
       {t:"10:15–11:30", a:"Chinatown → Little Italy", n:"Mott St, Mulberry St", q:"Chinatown Manhattan"},
       {t:"11:30–12:30", a:"SoHo shopping", n:"Prince St, Spring St, Broadway", q:"SoHo New York"},
       {t:"12:30 PM", a:"N/Q/R/W Prince St → 34 St–Herald Sq", n:"5 stops, 10 min", q:"Prince Street Subway Station"},
-      {t:"12:45 PM", key:true, a:"🥩 Keens Steakhouse lunch", meal:0},
+      {t:"12:45 PM", key:true, booked:true, a:"🥩 Keens Steakhouse lunch", meal:0},
       {t:"2:30 PM", a:"Done at Keens", n:"Walk it off"},
       {t:"2:30–3:15", a:"Subway/Uber to West Village", n:"A/C/E to 14 St", q:"West Village New York"},
       {t:"3:15–4:00", a:"West Village & Meatpacking stroll", n:"Bleecker St, Christopher St", q:"Meatpacking District New York"},
@@ -560,7 +582,7 @@ const DAYS = [
       {t:"6:00 PM", a:"7 train: 34 St–Hudson Yards → Times Sq", n:"Or 25 min walk", q:"34 Street Hudson Yards Subway Station"},
       {t:"6:30 PM", a:"Back to hotel · rest & change", n:"Pack bags"},
       {t:"7:30 PM", a:"Walk to the Empire State Building", n:"12 min from hotel", q:"Empire State Building"},
-      {t:"7:45 PM", key:true, a:"🏙️ Empire State check-in", n:"20 W 34th St · Express lane", q:"Empire State Building"},
+      {t:"7:45 PM", key:true, booked:true, a:"🏙️ Empire State Building (86F + Express)", n:"20 W 34th St · Express lane · sunset", q:"Empire State Building"},
       {t:"8:00 PM", a:"86th-floor observatory", n:"Golden hour"},
       {t:"8:30 PM", key:true, a:"🌅 Sunset", n:""},
       {t:"8:30–9:15", a:"City lights up · add 102F if you like", n:"Upgrade kiosk on the 86th floor"},
@@ -695,7 +717,7 @@ function renderDay(id, autoscroll){
         ? `<div class="meal-cta">🔖 Reserved · tap for details ›</div>`
         : `<div class="meal-cta"><span class="opts">${g.opts.map(o=>`<i>${o.b}</i>`).join("")}</span> ${g.opts.length} options · tap to choose ›</div>`;
       return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
-        <div class="tl-card meal ${it.key?'key':''}" data-meal="${it.meal}"><div class="tc"><div class="tl-act">${it.a}</div>${cta}</div></div></div>`;
+        <div class="tl-card meal ${it.key?'key':''}${it.booked?' booked':''}" data-meal="${it.meal}"><div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>${cta}</div></div></div>`;
     }
     const loc = Q2LOC[it.q];
     const wiki = loc ? loc.wiki : "";
@@ -704,7 +726,7 @@ function renderDay(id, autoscroll){
     const pkey = img || wiki || search;
     const thumb = it.q ? `<div class="thumb" data-pkey="${attr(pkey)}" data-wiki="${attr(wiki)}" data-search="${attr(search)}" data-img="${attr(img)}">${firstEmoji(it.a)}</div>` : "";
     return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
-      <div class="tl-card ${it.key?'key':''}"><div class="tc"><div class="tl-act">${it.a}</div>
+      <div class="tl-card ${it.key?'key':''}${it.booked?' booked':''}"><div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>
         ${it.n?`<div class="tl-note">${it.n}</div>`:""}${it.q?`<div style="margin-top:6px">${mapLinkHTML(it.q)}</div>`:""}</div>${thumb}</div></div>`;
   }).join("") + `</div><div class="spacer"></div>`;
   $("#day-content").innerHTML = html;
