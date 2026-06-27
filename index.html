@@ -138,34 +138,27 @@
   .meal-cta .opts i{width:18px;height:18px;border-radius:6px;background:var(--card-2);border:1px solid var(--gold-soft);font-style:normal;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--lav);}
 
   /* ---------- Holographic "headliner" cards (booked main events) ---------- */
-  .headliner{display:inline-block;font-family:'Space Grotesk',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:2px 9px;border-radius:20px;margin-bottom:6px;background:var(--holo);color:#0a0a12;box-shadow:0 0 11px rgba(196,181,247,.45);}
-  .tl-card.booked{position:relative;overflow:hidden;border:1.5px solid transparent;border-radius:12px;
-    background:linear-gradient(#0c0d12,#0c0d12) padding-box, var(--holo) border-box;
-    box-shadow:0 0 24px rgba(196,181,247,.22), inset 0 0 22px rgba(143,168,245,.07);}
+  .headliner{display:inline-block;font-family:'Space Grotesk',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:2px 9px;border-radius:20px;margin-bottom:6px;background:var(--holo);color:#0a0a12;box-shadow:0 0 11px rgba(196,181,247,.4);}
+  /* Black shiny holographic card — subtle at rest, blooms on hover/press */
+  .tl-card.booked{position:relative;overflow:hidden;border:1px solid #2b2b37;border-radius:12px;
+    background:linear-gradient(135deg,#0b0c11,#15151d);
+    box-shadow:0 10px 28px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04);}
   .tl-card.booked .tc, .tl-card.booked .thumb{position:relative;z-index:3;}
-  /* sharp metallic foil bands */
+  /* holographic colour wash (theme palette) */
   .tl-card.booked::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
-    background:repeating-linear-gradient(125deg,
-      rgba(255,255,255,0) 0%, rgba(255,120,200,.55) 5%, rgba(190,140,255,.55) 10%,
-      rgba(120,240,180,.55) 15%, rgba(255,240,150,.55) 20%, rgba(120,210,255,.55) 25%,
-      rgba(255,255,255,.7) 29%, rgba(255,255,255,0) 33%);
-    background-size:220% 220%;mix-blend-mode:color-dodge;opacity:.6;
-    animation:holoShift 5s linear infinite;}
-  /* fine diffraction-grating texture */
-  .tl-card.booked::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
-    background:repeating-linear-gradient(135deg, rgba(255,255,255,.12) 0 1px, transparent 1px 4px);
-    mix-blend-mode:overlay;opacity:.5;animation:holoSpark 5s linear infinite;}
-  /* sweeping chrome glint */
-  .tl-card.booked .glint{position:absolute;top:-25%;bottom:-25%;left:-60%;width:42%;z-index:2;pointer-events:none;
-    background:linear-gradient(90deg, transparent, rgba(255,255,255,.92), transparent);
-    transform:skewX(-18deg);filter:blur(2px);mix-blend-mode:screen;
-    animation:glint 5s ease-in-out infinite;}
-  @keyframes holoShift{0%{background-position:0% 50%}100%{background-position:220% 50%}}
-  @keyframes holoSpark{0%{transform:translate(0,0)}100%{transform:translate(5.6px,5.6px)}}
-  @keyframes glint{0%{left:-60%}55%{left:135%}100%{left:135%}}
-  @media (prefers-reduced-motion: reduce){
-    .tl-card.booked::before,.tl-card.booked::after,.tl-card.booked .glint{animation:none;}
-  }
+    background:linear-gradient(125deg,#9ff0b5,#8fa8f5,#c4b5f7,#efb3e4,#9ff0b5,#8fa8f5,#c4b5f7,#efb3e4,#9ff0b5);
+    background-size:200% 200%;opacity:.14;mix-blend-mode:color-dodge;
+    transition:opacity .35s ease;animation:holoGradient 6s ease infinite;}
+  /* fine holographic grid */
+  .tl-card.booked::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,.035) 2px, rgba(255,255,255,.035) 4px),
+      repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,.035) 2px, rgba(255,255,255,.035) 4px);
+    opacity:.45;transition:opacity .35s ease;}
+  .tl-card.booked:hover::before,.tl-card.booked:active::before{opacity:.62;}
+  .tl-card.booked:hover::after,.tl-card.booked:active::after{opacity:1;}
+  @keyframes holoGradient{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  @media (prefers-reduced-motion: reduce){ .tl-card.booked::before{animation:none;} }
 
   .reminders{position:relative;background:var(--card);border:1px solid #4a2e3e;border-radius:var(--radius);padding:13px 16px;margin-bottom:14px;overflow:hidden;}
   .reminders::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 100% at 0% 0%,rgba(255,122,150,.12),transparent 60%);pointer-events:none;}
@@ -725,7 +718,7 @@ function renderDay(id, autoscroll){
         ? `<div class="meal-cta">🔖 Reserved · tap for details ›</div>`
         : `<div class="meal-cta"><span class="opts">${g.opts.map(o=>`<i>${o.b}</i>`).join("")}</span> ${g.opts.length} options · tap to choose ›</div>`;
       return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
-        <div class="tl-card meal ${it.key?'key':''}${it.booked?' booked':''}" data-meal="${it.meal}">${it.booked?'<span class="glint"></span>':''}<div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>${cta}</div></div></div>`;
+        <div class="tl-card meal ${it.key?'key':''}${it.booked?' booked':''}" data-meal="${it.meal}"><div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>${cta}</div></div></div>`;
     }
     const loc = Q2LOC[it.q];
     const wiki = loc ? loc.wiki : "";
@@ -734,7 +727,7 @@ function renderDay(id, autoscroll){
     const pkey = img || wiki || search;
     const thumb = it.q ? `<div class="thumb" data-pkey="${attr(pkey)}" data-wiki="${attr(wiki)}" data-search="${attr(search)}" data-img="${attr(img)}">${firstEmoji(it.a)}</div>` : "";
     return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
-      <div class="tl-card ${it.key?'key':''}${it.booked?' booked':''}">${it.booked?'<span class="glint"></span>':''}<div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>
+      <div class="tl-card ${it.key?'key':''}${it.booked?' booked':''}"><div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>
         ${it.n?`<div class="tl-note">${it.n}</div>`:""}${it.q?`<div style="margin-top:6px">${mapLinkHTML(it.q)}</div>`:""}</div>${thumb}</div></div>`;
   }).join("") + `</div><div class="spacer"></div>`;
   $("#day-content").innerHTML = html;
