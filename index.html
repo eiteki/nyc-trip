@@ -186,19 +186,17 @@
     animation:radiantShift 9s ease-in-out infinite;}
   /* FOIL LAYER — real woven foil texture catching the theme rainbow (the part that moves) */
   .tl-card.booked .foil{position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;
-    --space:200px;
     background-image:
       url("img/foil.png"),
       repeating-linear-gradient(55deg,
-        var(--sunpillar-1) calc(var(--space)*1), var(--sunpillar-2) calc(var(--space)*2), var(--sunpillar-3) calc(var(--space)*3),
-        var(--sunpillar-4) calc(var(--space)*4), var(--sunpillar-5) calc(var(--space)*5), var(--sunpillar-6) calc(var(--space)*6),
-        var(--sunpillar-1) calc(var(--space)*7));
-    background-size:30% auto, 400% 100%;
-    background-position:center, 0% 0%;
-    background-blend-mode:difference;
-    filter:brightness(.7) contrast(2.2) saturate(1.8);
+        var(--sunpillar-1) 0%, var(--sunpillar-2) 4%, var(--sunpillar-3) 8%,
+        var(--sunpillar-4) 12%, var(--sunpillar-5) 16%, var(--sunpillar-6) 20%, var(--sunpillar-1) 24%);
+    background-size:34% auto, 200% 200%;
+    background-position:center, 0% 50%;
+    background-blend-mode:overlay;
+    filter:brightness(.85) contrast(1.5) saturate(1.7);
     mix-blend-mode:color-dodge;
-    opacity:calc(.28 + var(--card-opacity)*.7);
+    opacity:calc(.32 + var(--card-opacity)*.6);
     animation:radiantFoil 9s ease-in-out infinite;}
   /* GLITTER — authentic radiant sparkle, mostly on interaction */
   .tl-card.booked::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;
@@ -212,12 +210,12 @@
     mix-blend-mode:hard-light;filter:brightness(1) contrast(1.4);
     opacity:calc(.06 + var(--card-opacity)*.4);transition:opacity .3s ease;}
   @keyframes radiantShift{0%{background-position:center,0% 0%,0% 0%}50%{background-position:center,100% 100%,-100% 60%}100%{background-position:center,0% 0%,0% 0%}}
-  @keyframes radiantFoil{0%{background-position:center,0% 0%}50%{background-position:center,100% 0%}100%{background-position:center,0% 0%}}
+  @keyframes radiantFoil{0%{background-position:center,0% 50%}50%{background-position:center,100% 50%}100%{background-position:center,0% 50%}}
   /* interaction — pointer (desktop) / gyroscope (mobile) drives position, stops the idle shimmer */
   .tl-card.booked.lit::before, html.motion-on .tl-card.booked::before{animation:none;
     background-position:center, calc((var(--background-x) - 50%)*1.5 + 50%) calc((var(--background-y) - 50%)*1.5 + 50%), calc((var(--background-x) - 50%)*1.5 + 50%) calc((var(--background-y) - 50%)*1.5 + 50%);}
   .tl-card.booked.lit .foil, html.motion-on .tl-card.booked .foil{animation:none;
-    background-position:center, calc((var(--background-x) - 50%)*-2.5 + 50%) calc((var(--background-y) - 50%)*-1 + 50%);}
+    background-position:center, var(--background-x) var(--background-y);}
   @media (prefers-reduced-motion: reduce){ .tl-card.booked::before,.tl-card.booked .foil{animation:none;} }
   #motion-row{text-align:center;padding:2px 16px 0;}
   .motionbtn{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--lav);background:var(--card);border:1px solid var(--gold-soft);border-radius:30px;padding:7px 15px;cursor:pointer;}
@@ -422,11 +420,6 @@
   <div class="wrap" id="food-content"></div>
 </section>
 
-<!-- =================== PREP =================== -->
-<section class="view" id="view-prep">
-  <header class="masthead"><div class="kicker">Before You Fly</div><h1 style="font-size:32px">The Checklist</h1></header>
-  <div class="wrap" id="prep-content"></div>
-</section>
 
 <!-- =================== BOTTOM SHEET =================== -->
 <div id="sheet-backdrop"></div>
@@ -442,7 +435,6 @@
   <button data-view="days"><span class="ic"><svg viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg></span>Days</button>
   <button data-view="map"><span class="ic"><svg viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg></span>Map</button>
   <button data-view="food"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></span>Food</button>
-  <button data-view="prep"><span class="ic"><svg viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg></span>Prep</button>
 </nav>
 
 <script>
@@ -1044,7 +1036,6 @@ async function liveWeather(){
 /* ============================================================ */
 renderDay(1);
 renderFood();
-renderPrep();
 liveWeather();
 </script>
 </body>
