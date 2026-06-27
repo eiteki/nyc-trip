@@ -321,8 +321,9 @@
     <div class="sec-head"><h2>Booked &amp; Ticketed</h2><span class="tag">Locked In</span></div>
     <div class="card">
       <div class="kv"><span class="k">Sat 6/27</span><span class="v">🎭 <b>Wicked</b> @ Gershwin Theatre · 8:00 PM · Front-center premium ×2</span></div>
-      <div class="kv"><span class="k">Sun 6/28</span><span class="v">🗽 <b>Statue of Liberty + Ellis Island</b> (Pedestal) · 11:00 AM security · QR ×2</span></div>
-      <div class="kv"><span class="k">Mon 6/29</span><span class="v">🥩 <b>Keens Steakhouse</b> lunch · 12:45 PM · Resy ×2</span></div>
+      <div class="kv"><span class="k">Sun 6/28</span><span class="v">🐍 <b>Harry Potter and the Cursed Child</b> @ Lyric Theatre · 3:00 PM · (Tom Felton as Draco)</span></div>
+      <div class="kv"><span class="k">Mon 6/29</span><span class="v">🗽 <b>Statue of Liberty + Ellis Island</b> (GA) · board 8:30 AM · Booking <b>79234021</b></span></div>
+      <div class="kv"><span class="k">Mon 6/29</span><span class="v">🥩 <b>Keens Steakhouse</b> lunch · 2:00 PM · Resy ×2</span></div>
       <div class="kv"><span class="k">Mon 6/29</span><span class="v">🏙️ <b>Empire State 86F + Express</b> · 7:45 PM · Conf <b>7WHHNG8H</b></span></div>
     </div>
 
@@ -413,25 +414,18 @@ const LOCATIONS = [
   {n:"Central Park South", c:"attraction", q:"Central Park South", lat:40.7660, lng:-73.9760, wiki:"Central Park", img:"img/central-park.png"},
   {n:"Gershwin Theatre (Wicked)", c:"attraction", q:"Gershwin Theatre New York", lat:40.7625, lng:-73.9838, wiki:"Gershwin Theatre", img:"img/wicked.png"},
   {n:"Koreatown (32nd St)", c:"attraction", q:"Koreatown Manhattan 32nd Street", lat:40.7476, lng:-73.9870, wiki:"Koreatown, Manhattan"},
+  // Day 2 — Harry Potter + Midtown + DUMBO
+  {n:"Lyric Theatre (Harry Potter)", c:"attraction", q:"Lyric Theatre Broadway 214 West 43rd Street", lat:40.7568, lng:-73.9882, wiki:"Lyric Theatre (1998 Broadway theatre)"},
+  {n:"Grand Central Terminal", c:"attraction", q:"Grand Central Terminal New York", lat:40.7527, lng:-73.9772, wiki:"Grand Central Terminal"},
+  {n:"MoMA", c:"attraction", q:"Museum of Modern Art New York", lat:40.7614, lng:-73.9776, wiki:"Museum of Modern Art"},
+  {n:"DUMBO · Washington & Water St", c:"attraction", q:"Washington St and Water St Brooklyn", lat:40.7036, lng:-73.9905, wiki:"Dumbo, Brooklyn"},
+  {n:"Brooklyn Bridge Park / Pebble Beach", c:"attraction", q:"Brooklyn Bridge Park Pebble Beach", lat:40.7026, lng:-73.9967, wiki:"Brooklyn Bridge Park"},
+  // Day 3 — Liberty + Downtown + Empire State
   {n:"Battery Park", c:"attraction", q:"Battery Park New York", lat:40.7033, lng:-74.0170, wiki:"The Battery (Manhattan)"},
   {n:"Statue of Liberty", c:"attraction", q:"Liberty Island New York", lat:40.6892, lng:-74.0445, wiki:"Statue of Liberty"},
   {n:"Ellis Island", c:"attraction", q:"Ellis Island National Museum", lat:40.6995, lng:-74.0397, wiki:"Ellis Island"},
   {n:"Charging Bull", c:"attraction", q:"Charging Bull Wall Street", lat:40.7056, lng:-74.0134, wiki:"Charging Bull"},
   {n:"Wall Street", c:"attraction", q:"Wall Street New York", lat:40.7069, lng:-74.0113, wiki:"Wall Street"},
-  {n:"Federal Hall", c:"attraction", q:"Federal Hall National Memorial", lat:40.7073, lng:-74.0102, wiki:"Federal Hall"},
-  {n:"Trinity Church", c:"attraction", q:"Trinity Church Wall Street", lat:40.7081, lng:-74.0125, wiki:"Trinity Church (Manhattan)"},
-  {n:"9/11 Memorial", c:"attraction", q:"9 11 Memorial New York", lat:40.7115, lng:-74.0134, wiki:"National September 11 Memorial & Museum"},
-  {n:"Oculus", c:"attraction", q:"Oculus World Trade Center", lat:40.7117, lng:-74.0110, wiki:"World Trade Center Transportation Hub"},
-  {n:"Brooklyn Bridge", c:"attraction", q:"Brooklyn Bridge Manhattan Entrance", lat:40.7061, lng:-73.9969, wiki:"Brooklyn Bridge"},
-  {n:"DUMBO · Washington & Water St", c:"attraction", q:"Washington St and Water St Brooklyn", lat:40.7036, lng:-73.9905, wiki:"Dumbo, Brooklyn"},
-  {n:"Brooklyn Bridge Park / Pebble Beach", c:"attraction", q:"Brooklyn Bridge Park Pebble Beach", lat:40.7026, lng:-73.9967, wiki:"Brooklyn Bridge Park"},
-  {n:"Chinatown", c:"attraction", q:"Chinatown Manhattan", lat:40.7158, lng:-73.9970, wiki:"Chinatown, Manhattan"},
-  {n:"Little Italy", c:"attraction", q:"Little Italy Manhattan", lat:40.7191, lng:-73.9973, wiki:"Little Italy, Manhattan"},
-  {n:"SoHo", c:"attraction", q:"SoHo New York", lat:40.7233, lng:-74.0030, wiki:"SoHo, Manhattan"},
-  {n:"West Village", c:"attraction", q:"West Village New York", lat:40.7358, lng:-74.0036, wiki:"West Village"},
-  {n:"Meatpacking District", c:"attraction", q:"Meatpacking District New York", lat:40.7409, lng:-74.0078, wiki:"Meatpacking District, Manhattan"},
-  {n:"High Line", c:"attraction", q:"High Line New York", lat:40.7480, lng:-74.0048, wiki:"High Line"},
-  {n:"Hudson Yards · Vessel", c:"attraction", q:"Vessel Hudson Yards", lat:40.7538, lng:-74.0019, wiki:"Vessel (structure)"},
   {n:"Empire State Building", c:"attraction", q:"Empire State Building", lat:40.7484, lng:-73.9857, wiki:"Empire State Building"},
   // Restaurants
   {n:"Keens Steakhouse ✅", c:"food", q:"Keens Steakhouse 72 West 36th Street", lat:40.7505, lng:-73.9858, wiki:"Keens Steakhouse"},
@@ -443,7 +437,9 @@ const LOCATIONS = [
   {n:"BCD Tofu House", c:"food", q:"BCD Tofu House 32nd Street", lat:40.7478, lng:-73.9862, wiki:"BCD Tofu House"},
   {n:"Junior's Cheesecake", c:"food", q:"Junior's Restaurant Times Square 45th Street", lat:40.7587, lng:-73.9852, wiki:"Junior's Restaurant"},
   {n:"Levain Bakery (W 46th)", c:"food", q:"Levain Bakery West 46th Street", lat:40.7595, lng:-73.9870, wiki:"Levain Bakery"},
-  {n:"Stone Street", c:"food", q:"Stone Street New York", lat:40.7042, lng:-74.0113, wiki:"Stone Street (Manhattan)"},
+  {n:"Los Tacos No.1 (Times Sq)", c:"food", q:"Los Tacos No 1 Times Square", lat:40.7561, lng:-73.9866, wiki:""},
+  {n:"The Halal Guys (53rd & 6th)", c:"food", q:"The Halal Guys 53rd 6th Avenue", lat:40.7616, lng:-73.9790, wiki:"The Halal Guys"},
+  {n:"Pret a Manger", c:"food", q:"Pret a Manger Times Square", lat:40.7570, lng:-73.9855, wiki:"Pret a Manger"},
   {n:"Celestine (DUMBO)", c:"food", q:"Celestine John Street Brooklyn", lat:40.7026, lng:-73.9890, wiki:"Dumbo, Brooklyn"},
   {n:"The River Café", c:"food", q:"The River Cafe Brooklyn", lat:40.7036, lng:-73.9956, wiki:"The River Café"},
   {n:"Cecconi's DUMBO", c:"food", q:"Cecconi's DUMBO Brooklyn", lat:40.7033, lng:-73.9901, wiki:"Empire Stores"},
@@ -451,8 +447,7 @@ const LOCATIONS = [
   // Transit
   {n:"Times Sq–42 St Station", c:"transit", q:"Times Square 42 Street Subway Station", lat:40.7557, lng:-73.9870, wiki:"Times Square–42nd Street/Port Authority Bus Terminal (New York City Subway)"},
   {n:"South Ferry Station", c:"transit", q:"South Ferry Subway Station Manhattan", lat:40.7020, lng:-74.0132, wiki:"South Ferry/Whitehall Street station"},
-  {n:"34 St–Herald Sq Station", c:"transit", q:"34th Street Herald Square Subway Station", lat:40.7497, lng:-73.9876, wiki:"34th Street–Herald Square station"},
-  {n:"34 St–Hudson Yards Station", c:"transit", q:"34 Street Hudson Yards Subway Station", lat:40.7559, lng:-74.0014, wiki:"34th Street–Hudson Yards station"},
+  {n:"34 St–Penn Station", c:"transit", q:"34 Street Penn Station Subway", lat:40.7506, lng:-73.9910, wiki:"34th Street–Penn Station (IRT Broadway–Seventh Avenue Line)"},
   {n:"Newark Liberty Airport (EWR)", c:"transit", q:"Newark Liberty International Airport", lat:40.6895, lng:-74.1745, wiki:"Newark Liberty International Airport"},
 ];
 const Q2WIKI = {}; LOCATIONS.forEach(l=>{ if(l.wiki) Q2WIKI[l.q]=l.wiki; });
@@ -467,7 +462,7 @@ const WEATHER = {
 /* ---- Meal options (each = a flexible slot with A/B/C choices) ---- */
 const FOOD = [
   // index 0 — Day 3 lunch (confirmed)
-  {day:3, icon:"🥩", title:"Lunch — Keens", when:"Mon 12:45 PM · Reserved (Resy)", confirmed:true, opts:[
+  {day:3, icon:"🥩", title:"Lunch — Keens", when:"Mon 2:00 PM · Reserved (Resy)", confirmed:true, opts:[
     {b:"✓", name:"Keens Steakhouse", meta:"Mutton chop / porterhouse legend", price:"Resy booked", note:"The one sure thing — already reserved.", q:"Keens Steakhouse 72 West 36th Street", wiki:"Keens Steakhouse", confirmed:true},
   ]},
   // 1 — Day 1 brunch
@@ -486,37 +481,31 @@ const FOOD = [
   {day:1, icon:"🍰", title:"Late Dessert", when:"Sat ~11 PM · after the show", opts:[
     {b:"A", name:"Junior's Cheesecake", meta:"Legendary NYC cheesecake", price:"$10–15", note:"5 min walk; open late.", q:"Junior's Restaurant Times Square 45th Street", wiki:"Junior's Restaurant"},
     {b:"B", name:"Levain Bakery (W 46th)", meta:"Giant American cookies", price:"$5–8", note:"May already be closed by 10 PM.", q:"Levain Bakery West 46th Street", wiki:"Levain Bakery"},
-    {b:"C", name:"Skip", meta:"Early start tomorrow", price:"—", note:"Save it — Liberty Island day starts early.", q:"", wiki:""},
+    {b:"C", name:"Skip", meta:"Early-ish night", price:"—", note:"Save it — busy Sunday ahead.", q:"", wiki:""},
   ]},
-  // 4 — Day 2 breakfast
-  {day:2, icon:"☕", title:"Breakfast", when:"Sun ~8 AM · make it quick", opts:[
-    {b:"A", name:"Hotel room service", meta:"See the menu", price:"varies", note:"Least effort before a big day.", q:"", wiki:""},
-    {b:"B", name:"Ess-a-Bagel grab-and-go", meta:"NYC bagel", price:"$15", note:"On the way if you skipped Day 1.", q:"Ess a Bagel 3rd Avenue 51st Street", wiki:"Ess-a-Bagel"},
-    {b:"C", name:"Pret a Manger", meta:"Coffee + sandwich", price:"$10–15", note:"Fastest, cheapest.", q:"Pret a Manger Times Square", wiki:"Pret a Manger"},
+  // 4 — Day 2 lunch (Midtown, before Harry Potter)
+  {day:2, icon:"🌮", title:"Lunch", when:"Sun ~12 PM · Midtown (pre-show)", opts:[
+    {b:"A", name:"Junior's Cheesecake", meta:"American diner + famous cheesecake", price:"$20–30", note:"5 min from hotel; meal + dessert in one.", q:"Junior's Restaurant Times Square 45th Street", wiki:"Junior's Restaurant"},
+    {b:"B", name:"Los Tacos No.1 (Times Sq)", meta:"Authentic Mexican tacos", price:"$15–20", note:"Fast, amazing, casual.", q:"Los Tacos No 1 Times Square", wiki:""},
+    {b:"C", name:"The Halal Guys (53rd & 6th)", meta:"NYC street-cart legend · chicken & rice", price:"$12–15", note:"Takeout; quick and filling.", q:"The Halal Guys 53rd 6th Avenue", wiki:"The Halal Guys"},
   ]},
-  // 5 — Day 2 lunch
-  {day:2, icon:"🥪", title:"Lunch", when:"Sun ~12:30 · ferry window", opts:[
-    {b:"A", name:"Liberty / Ellis Island café", meta:"Tourist fare", price:"$15–25", note:"Convenient, no detour.", q:"Liberty Island New York", wiki:"Statue of Liberty"},
-    {b:"B", name:"Pack a light lunch", meta:"Grab in the morning", price:"$10", note:"No alcohol/glass through security.", q:"", wiki:""},
-    {b:"C", name:"Stone Street late lunch", meta:"Historic downtown lane", price:"$20–30", note:"e.g. Adrienne's Pizza Bar, Fraunces Tavern (1762).", q:"Stone Street New York", wiki:"Stone Street (Manhattan)"},
-  ]},
-  // 6 — Day 2 DUMBO dinner
+  // 5 — Day 2 DUMBO dinner
   {day:2, icon:"⭐", title:"DUMBO Dinner", when:"Sun ~7:30 PM · the big one", opts:[
     {b:"A", name:"Celestine", meta:"Mediterranean · two-bridge window view", price:"$150–200 / two", note:"Rave reviews; reserve ahead.", q:"Celestine John Street Brooklyn", wiki:"Dumbo, Brooklyn"},
     {b:"B", name:"The River Café", meta:"Michelin fine dining", price:"$400+ / two", note:"Dress code; must reserve.", q:"The River Cafe Brooklyn", wiki:"The River Café"},
     {b:"C", name:"Cecconi's DUMBO", meta:"Italian at Empire Stores", price:"$120–160 / two", note:"Relaxed & cozy.", q:"Cecconi's DUMBO Brooklyn", wiki:"Empire Stores"},
   ]},
-  // 7 — Day 3 breakfast
-  {day:3, icon:"🥐", title:"Breakfast", when:"Mon ~9 AM · light (save room for Keens)", opts:[
-    {b:"A", name:"Ess-a-Bagel", meta:"Half a bagel is plenty", price:"$15", note:"Save room for Keens.", q:"Ess a Bagel 3rd Avenue 51st Street", wiki:"Ess-a-Bagel"},
-    {b:"B", name:"Café near hotel", meta:"Light bite", price:"$10", note:"Save room for Keens.", q:"", wiki:""},
-    {b:"C", name:"Skip", meta:"Fruit / snack", price:"—", note:"Most room for the steakhouse lunch.", q:"", wiki:""},
+  // 6 — Day 3 grab-and-go breakfast (before Liberty)
+  {day:3, icon:"☕", title:"Grab-and-go Breakfast", when:"Mon ~7 AM · before Liberty", opts:[
+    {b:"A", name:"Hotel room service", meta:"See the menu", price:"varies", note:"Least effort on an early morning.", q:"", wiki:""},
+    {b:"B", name:"Pret a Manger", meta:"Coffee + sandwich", price:"$10–15", note:"Grab on the way out.", q:"Pret a Manger Times Square", wiki:"Pret a Manger"},
+    {b:"C", name:"Lobby Starbucks", meta:"Coffee + pastry", price:"$10", note:"Fastest option.", q:"", wiki:""},
   ]},
-  // 8 — Day 3 late dinner
+  // 7 — Day 3 late dinner (after Empire State)
   {day:3, icon:"🌃", title:"Late Dinner", when:"Mon ~10 PM · after the Empire State", opts:[
     {b:"A", name:"Katz's Delicatessen", meta:"1888 pastrami legend", price:"$50–60 / two", note:"Share one; ~10 min Uber from ESB; $50 lost-ticket fee.", q:"Katz's Delicatessen 205 East Houston Street", wiki:"Katz's Delicatessen"},
     {b:"B", name:"Koreatown late dinner", meta:"Affordable Korean", price:"$40–60", note:"15 min walk from the hotel.", q:"Koreatown Manhattan 32nd Street", wiki:"Koreatown, Manhattan"},
-    {b:"C", name:"Skip", meta:"Pack & sleep", price:"—", note:"Early 7:30 AM departure tomorrow.", q:"", wiki:""},
+    {b:"C", name:"Skip", meta:"Still full from Keens", price:"—", note:"Pack & sleep — 7:30 AM departure tomorrow.", q:"", wiki:""},
   ]},
 ];
 
@@ -542,51 +531,46 @@ const DAYS = [
     ],
   },
   {
-    id:2, iso:"2026-06-28", label:"Day 2", date:"Sun · Jun 28", title:"Lady Liberty + Lower Manhattan + DUMBO",
-    theme:"The classic downtown day — from the Statue of Liberty to the Manhattan skyline at DUMBO.",
-    prep:"Sunglasses, sunscreen, comfy shoes, water.",
-    reminders:["🗽 Statue of Liberty — 11:00 AM security entry (QR codes ×2)","🍽️ DUMBO dinner — reserve ahead if choosing Celestine / River Café"],
+    id:2, iso:"2026-06-28", label:"Day 2", date:"Sun · Jun 28", title:"Harry Potter + DUMBO Skyline",
+    theme:"Easy Midtown morning, three hours of stage magic at the Cursed Child, then over to DUMBO for the skyline at sunset.",
+    prep:"Folding umbrella + a light layer (theatre A/C runs cold).",
+    reminders:["🐍 Harry Potter and the Cursed Child — 3:00 PM @ Lyric Theatre (be in by 2:30)","🍽️ DUMBO dinner — reserve ahead (Celestine / River Café)"],
     items:[
-      {t:"7:30–8:30", a:"🍽️ Breakfast", meal:4},
-      {t:"9:30 AM", key:true, noimg:true, a:"Walk to Times Sq–42 St Station", n:"5 min", q:"Times Square 42 Street Subway Station"},
-      {t:"9:45 AM", noimg:true, a:"1 train (Downtown) → South Ferry", n:"Last stop — can't overshoot · 20–25 min", q:"South Ferry Subway Station Manhattan"},
-      {t:"10:15 AM", noimg:true, a:"Battery Park · Statue City Cruises security", n:"Behind Castle Clinton · arrive ~30 min early", q:"Battery Park New York"},
-      {t:"11:00 AM", key:true, booked:true, img:"img/liberty-statue.png", a:"🗽 Statue of Liberty (Pedestal)", n:"Ticket time = security time · pedestal + museum", q:"Liberty Island New York"},
-      {t:"11:30–1:00", img:"img/liberty-torch.png", a:"Liberty Island: pedestal + museum", n:"Pedestal first (2nd security)", q:"Liberty Island New York"},
-      {t:"12:30 PM", a:"🍽️ Lunch", meal:5},
-      {t:"1:00–3:00", img:"img/ellis-island.png", a:"Ferry to Ellis Island · immigration museum", n:"Free audio guide · ferry back to Battery Park after", q:"Ellis Island National Museum"},
-      {t:"3:45–4:15", img:"img/charging-bull.png", a:"Battery Park → Charging Bull", n:"Expect a photo line at the bull", q:"Charging Bull Wall Street"},
-      {t:"4:15–5:00", img:"img/trinity-church.png", a:"Wall St → Federal Hall → Trinity Church", n:"The prettiest stretch of Wall St", q:"Wall Street New York"},
-      {t:"5:00–5:45", img:"img/oculus.png", a:"9/11 Memorial pools → Oculus", n:"Look up inside the Oculus", q:"9 11 Memorial New York"},
-      {t:"5:45–6:30 PM", key:true, noimg:true, a:"🌉 Walk the Brooklyn Bridge → DUMBO", n:"From the Manhattan side · ~30–40 min across", q:"Washington St and Water St Brooklyn"},
-      {t:"6:30–7:15", img:"img/dumbo.png", a:"📸 Washington St × Water St shot", n:"Golden hour begins — best light", q:"Washington St and Water St Brooklyn"},
-      {t:"7:30 PM", key:true, a:"🍽️ DUMBO dinner ⭐", meal:6},
-      {t:"9:00 PM", a:"Brooklyn Bridge Park / Pebble Beach", n:"Skyline glows after dark · Uber back when done", q:"Brooklyn Bridge Park Pebble Beach"},
+      {t:"9:00 AM", noimg:true, a:"Wake up · easy breakfast", n:"Hotel or a nearby café"},
+      {t:"10:00–12:00", a:"Free morning in Midtown", n:"Options: Top of the Rock, Grand Central photos, or MoMA", q:"Grand Central Terminal New York"},
+      {t:"12:00–1:30", a:"🍽️ Lunch", meal:4},
+      {t:"1:30–2:00", noimg:true, a:"Back to hotel · freshen up", n:"Change clothes for the show", q:"Renaissance New York Times Square Hotel"},
+      {t:"2:30 PM", noimg:true, a:"Walk to Lyric Theatre", n:"214 W 43rd St · 5 min · grab a Butterbeer in the lobby", q:"Lyric Theatre Broadway 214 West 43rd Street"},
+      {t:"3:00 PM", key:true, booked:true, noimg:true, a:"🐍 Harry Potter and the Cursed Child", n:"Lyric Theatre · 3 hrs incl. 20-min interval · Tom Felton as Draco", q:"Lyric Theatre Broadway 214 West 43rd Street"},
+      {t:"6:30 PM", noimg:true, a:"Uber to DUMBO", n:"~20 min across the river", q:"DUMBO Brooklyn"},
+      {t:"7:00 PM", img:"img/dumbo.png", a:"📸 Washington St × Water St shot", n:"Golden hour — classic Manhattan Bridge view", q:"Washington St and Water St Brooklyn"},
+      {t:"7:30 PM", key:true, a:"🍽️ DUMBO dinner ⭐", meal:5},
+      {t:"~8:30 PM", a:"🌅 Sunset · Brooklyn Bridge Park", n:"Pebble Beach — skyline glows after dark", q:"Brooklyn Bridge Park Pebble Beach"},
+      {t:"9:30 PM", noimg:true, a:"Uber back to the hotel", n:""},
     ],
   },
   {
-    id:3, iso:"2026-06-29", label:"Day 3", date:"Mon · Jun 29", title:"Neighborhood Walks + Empire State Sunset",
-    theme:"West side & downtown at a slow pace, a steakhouse lunch, capped by sunset atop the Empire State.",
-    prep:"Comfy shoes — this is the most-walking day.",
-    reminders:["🥩 Keens — 12:45 PM reservation (Resy ×2)","🏙️ Empire State — 7:45 PM (conf 7WHHNG8H · Express lane @ 20 W 34th St)"],
+    id:3, iso:"2026-06-29", label:"Day 3", date:"Mon · Jun 29", title:"Lady Liberty + Steak + Empire State",
+    theme:"An early start for the Statue of Liberty & Ellis Island, a steakhouse lunch at Keens, then sunset atop the Empire State.",
+    prep:"Sunglasses, sunscreen, power bank, comfy shoes — Liberty Island is a full sun day.",
+    reminders:["🗽 Statue of Liberty — boarding 8:15 AM / board 8:30 (Booking 79234021)","🥩 Keens — 2:00 PM reservation (Resy ×2)","🏙️ Empire State — 7:45 PM (conf 7WHHNG8H · Express @ 20 W 34th St)"],
     items:[
-      {t:"8:30–9:30", a:"🍽️ Light breakfast", meal:7},
-      {t:"10:00 AM", noimg:true, a:"🚇 Subway to Chinatown (Canal St)", steps:["Walk to Times Sq–42 St Station","N/Q/R/W Downtown → Canal St (5 stops, ~15 min)","Use the NQRW Canal St platform"], q:"Canal Street Subway Station NQRW Manhattan"},
-      {t:"10:15–11:30", a:"Chinatown → Little Italy", n:"Mott St, Mulberry St", q:"Chinatown Manhattan"},
-      {t:"11:30–12:30", a:"SoHo shopping", n:"Prince St, Spring St, Broadway", q:"SoHo New York"},
-      {t:"12:30 PM", noimg:true, a:"🚇 Subway to Herald Sq", steps:["N/Q/R/W from Prince St → 34 St–Herald Sq (5 stops, ~10 min)","Keens is a ~4 min walk from Herald Sq"], q:"Prince Street Subway Station"},
-      {t:"12:45 PM", key:true, booked:true, a:"🥩 Keens Steakhouse lunch", meal:0},
-      {t:"2:30 PM", a:"Done at Keens · walk to West Village", n:"~15 min stroll to digest (or A/C/E to 14 St)", q:"West Village New York"},
-      {t:"3:15–4:00", a:"West Village & Meatpacking stroll", n:"Bleecker St, Christopher St", q:"Meatpacking District New York"},
-      {t:"4:00–5:30", a:"🌳 Walk the High Line → Hudson Yards", steps:["Enter at Gansevoort St (south end)","Walk north ~1.5 mi / 2.5 km","Exit at Hudson Yards (north end)"], q:"High Line New York"},
-      {t:"5:30–6:00", a:"🌀 Vessel exterior photos", n:"Shoot up from the plaza", q:"Vessel Hudson Yards"},
-      {t:"6:00 PM", noimg:true, a:"🚇 7 train → Times Sq", steps:["7 train from 34 St–Hudson Yards → Times Sq","Or walk ~25 min"], q:"34 Street Hudson Yards Subway Station"},
-      {t:"6:30 PM", noimg:true, a:"Back to hotel · rest & change", n:"Pack bags", q:"Renaissance New York Times Square Hotel"},
-      {t:"7:45 PM", key:true, booked:true, a:"🏙️ Empire State Building (86F + Express)", n:"12 min walk from hotel · entrance 20 W 34th St · Express lane", q:"Empire State Building"},
-      {t:"8:00 PM", a:"86th-floor observatory", n:"Golden hour", q:"Empire State Building"},
+      {t:"6:30 AM", noimg:true, a:"Wake up — early start!", n:"Liberty day; pack the power bank"},
+      {t:"7:00 AM", a:"🍽️ Grab-and-go breakfast", meal:6},
+      {t:"7:15 AM", noimg:true, a:"Uber to Battery Park", n:"~15 min, no traffic (or 1 train → South Ferry)", q:"Battery Park New York"},
+      {t:"7:45 AM", noimg:true, a:"Battery Park · security line", n:"Castle Clinton · arrive ~30 min early", q:"Battery Park New York"},
+      {t:"8:30 AM", key:true, booked:true, img:"img/liberty-statue.png", a:"🗽 Statue of Liberty (board)", n:"Boarding 8:15 · Booking 79234021 · GA (statue base + museum)", q:"Liberty Island New York"},
+      {t:"8:45–9:45", img:"img/liberty-torch.png", a:"Liberty Island: statue base + museum", n:"GA ticket — no pedestal", q:"Liberty Island New York"},
+      {t:"9:45–11:30", img:"img/ellis-island.png", a:"Ferry to Ellis Island · immigration museum", n:"Free audio guide · ferry back to Battery Park after", q:"Ellis Island National Museum"},
+      {t:"12:00 PM", img:"img/charging-bull.png", a:"Charging Bull + Wall St (quick photos)", n:"Fast stop before heading uptown", q:"Charging Bull Wall Street"},
+      {t:"12:30 PM", noimg:true, a:"🚇 Subway to Midtown (Keens)", steps:["1 train from South Ferry → 34 St–Penn Station (~25 min)","Keens is a ~5 min walk from Penn Station"], q:"34 Street Penn Station Subway"},
+      {t:"2:00 PM", key:true, booked:true, a:"🥩 Keens Steakhouse lunch", meal:0},
+      {t:"4:30–6:30", noimg:true, a:"🛌 Rest & pack at the hotel", n:"Liberty day is exhausting — lie down before sunset", q:"Renaissance New York Times Square Hotel"},
+      {t:"7:45 PM", key:true, booked:true, img:"img/empire-state.png", a:"🏙️ Empire State Building (86F + Express)", n:"12 min walk · entrance 20 W 34th St · Express lane → 86th floor (golden hour)", q:"Empire State Building"},
       {t:"8:30 PM", key:true, a:"🌅 Sunset", n:""},
       {t:"8:30–9:15", a:"City lights up · add 102F if you like", n:"Upgrade kiosk on the 86th floor"},
-      {t:"9:30–10:00", a:"🍽️ Late dinner", meal:8},
+      {t:"9:30–10:00", a:"🍽️ Late dinner", meal:7},
+      {t:"10:30 PM", noimg:true, a:"Back to hotel · pack & sleep early", n:"7:30 AM airport departure tomorrow"},
     ],
   },
 ];
@@ -834,8 +818,8 @@ function highlightNow(d, autoscroll){
 /* ---- Food tab ---- */
 const FOOD_DAYS = [
   {label:"Day 1 · Sat Jun 27", slots:[1,2,3]},
-  {label:"Day 2 · Sun Jun 28", slots:[4,5,6]},
-  {label:"Day 3 · Mon Jun 29", slots:[7,0,8]},
+  {label:"Day 2 · Sun Jun 28", slots:[4,5]},
+  {label:"Day 3 · Mon Jun 29", slots:[6,0,7]},
 ];
 function renderFood(){
   let html = "";
