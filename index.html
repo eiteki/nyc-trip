@@ -39,6 +39,7 @@
     --holo:linear-gradient(100deg,#9ff0b5 0%,#c1e7cb 18%,#c8bdf7 46%,#ecb8e6 72%,#b9c4f7 100%);
     --nav-h:64px;
     --radius:16px;
+    --hx:0%; --hy:0%; --rx:0deg; --ry:0deg; --pmag:0;   /* pointer/gyroscope-driven */
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
@@ -139,26 +140,46 @@
 
   /* ---------- Holographic "headliner" cards (booked main events) ---------- */
   .headliner{display:inline-block;font-family:'Space Grotesk',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:2px 9px;border-radius:20px;margin-bottom:6px;background:var(--holo);color:#0a0a12;box-shadow:0 0 11px rgba(196,181,247,.4);}
-  /* Black shiny holographic card — subtle at rest, blooms on hover/press */
+
+  /* ===== Reverse-holo (non-rare): glitter + faint foil + moving glare ===== */
   .tl-card.booked{position:relative;overflow:hidden;border:1px solid #2b2b37;border-radius:12px;
     background:linear-gradient(135deg,#0b0c11,#15151d);
-    box-shadow:0 10px 28px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04);}
+    box-shadow:0 10px 28px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04);
+    transform-style:preserve-3d;transition:transform .18s ease-out;will-change:transform;}
   .tl-card.booked .tc, .tl-card.booked .thumb{position:relative;z-index:3;}
-  /* holographic colour wash (theme palette) */
+  /* faint rainbow foil */
   .tl-card.booked::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
-    background:linear-gradient(125deg,#9ff0b5,#8fa8f5,#c4b5f7,#efb3e4,#9ff0b5,#8fa8f5,#c4b5f7,#efb3e4,#9ff0b5);
-    background-size:200% 200%;opacity:.14;mix-blend-mode:color-dodge;
-    transition:opacity .35s ease;animation:holoGradient 6s ease infinite;}
-  /* fine holographic grid */
-  .tl-card.booked::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;
-    background:
-      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,.035) 2px, rgba(255,255,255,.035) 4px),
-      repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,.035) 2px, rgba(255,255,255,.035) 4px);
-    opacity:.45;transition:opacity .35s ease;}
-  .tl-card.booked:hover::before,.tl-card.booked:active::before{opacity:.62;}
-  .tl-card.booked:hover::after,.tl-card.booked:active::after{opacity:1;}
+    background:linear-gradient(115deg,#9ff0b5,#8fa8f5,#c4b5f7,#efb3e4,#9ff0b5,#8fa8f5,#c4b5f7);
+    background-size:300% 300%;background-position:50% 50%;mix-blend-mode:color-dodge;opacity:.24;
+    animation:holoGradient 7s ease infinite;}
+  /* glitter sparkle field (the reverse-holo signature) */
+  .tl-card.booked::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
+    background-image:
+      radial-gradient(rgba(255,255,255,.9) 0 .6px, transparent 1.2px),
+      radial-gradient(rgba(255,255,255,.6) 0 .5px, transparent 1.1px),
+      radial-gradient(rgba(190,230,255,.6) 0 .5px, transparent 1.1px);
+    background-size:5px 5px,8px 8px,12px 12px;background-position:0 0,2px 3px,5px 1px;
+    mix-blend-mode:color-dodge;opacity:.22;animation:sparkleDrift 8s linear infinite;}
+  /* moving glare highlight */
+  .tl-card.booked .glare{position:absolute;inset:-1px;z-index:2;pointer-events:none;border-radius:inherit;
+    background:radial-gradient(circle at calc(50% + var(--hx)) calc(50% + var(--hy)),
+      rgba(255,255,255,.5), rgba(255,255,255,.07) 30%, transparent 56%);
+    mix-blend-mode:overlay;opacity:.15;transition:opacity .2s ease;}
   @keyframes holoGradient{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-  @media (prefers-reduced-motion: reduce){ .tl-card.booked::before{animation:none;} }
+  @keyframes sparkleDrift{0%{background-position:0 0,2px 3px,5px 1px}100%{background-position:0 15px,2px 18px,5px 13px}}
+  /* active — pointer (desktop) or gyroscope (mobile) drives the look */
+  .tl-card.booked.lit, html.motion-on .tl-card.booked{
+    transform:perspective(720px) rotateX(var(--rx)) rotateY(var(--ry));}
+  .tl-card.booked.lit::before, html.motion-on .tl-card.booked::before{
+    animation:none;background-position:calc(50% + var(--hx)) calc(50% + var(--hy));opacity:calc(.3 + var(--pmag)*.42);}
+  .tl-card.booked.lit::after, html.motion-on .tl-card.booked::after{
+    animation:none;
+    background-position:calc(0px + var(--hx)) calc(0px + var(--hy)),calc(2px + var(--hx)) calc(3px + var(--hy)),calc(5px + var(--hx)) calc(1px + var(--hy));
+    opacity:calc(.26 + var(--pmag)*.55);}
+  .tl-card.booked.lit .glare, html.motion-on .tl-card.booked .glare{opacity:calc(.14 + var(--pmag)*.55);}
+  #motion-row{text-align:center;padding:2px 16px 0;}
+  .motionbtn{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--lav);background:var(--card);border:1px solid var(--gold-soft);border-radius:30px;padding:7px 15px;cursor:pointer;}
+  @media (prefers-reduced-motion: reduce){ .tl-card.booked::before,.tl-card.booked::after{animation:none;} }
 
   .reminders{position:relative;background:var(--card);border:1px solid #4a2e3e;border-radius:var(--radius);padding:13px 16px;margin-bottom:14px;overflow:hidden;}
   .reminders::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 100% at 0% 0%,rgba(255,122,150,.12),transparent 60%);pointer-events:none;}
@@ -331,6 +352,7 @@
 <section class="view" id="view-days">
   <header class="masthead"><div class="kicker">Day by Day</div><h1 style="font-size:32px">The Daily Plan</h1></header>
   <div class="daybar" id="daybar"></div>
+  <div id="motion-row" style="display:none"><button id="motionbtn" class="motionbtn">✨ Enable motion shine</button></div>
   <div class="wrap" id="day-content"></div>
 </section>
 
@@ -718,7 +740,7 @@ function renderDay(id, autoscroll){
         ? `<div class="meal-cta">🔖 Reserved · tap for details ›</div>`
         : `<div class="meal-cta"><span class="opts">${g.opts.map(o=>`<i>${o.b}</i>`).join("")}</span> ${g.opts.length} options · tap to choose ›</div>`;
       return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
-        <div class="tl-card meal ${it.key?'key':''}${it.booked?' booked':''}" data-meal="${it.meal}"><div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>${cta}</div></div></div>`;
+        <div class="tl-card meal ${it.key?'key':''}${it.booked?' booked':''}" data-meal="${it.meal}">${it.booked?'<span class="glare"></span>':''}<div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>${cta}</div></div></div>`;
     }
     const loc = Q2LOC[it.q];
     const wiki = loc ? loc.wiki : "";
@@ -727,14 +749,61 @@ function renderDay(id, autoscroll){
     const pkey = img || wiki || search;
     const thumb = it.q ? `<div class="thumb" data-pkey="${attr(pkey)}" data-wiki="${attr(wiki)}" data-search="${attr(search)}" data-img="${attr(img)}">${firstEmoji(it.a)}</div>` : "";
     return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
-      <div class="tl-card ${it.key?'key':''}${it.booked?' booked':''}"><div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>
+      <div class="tl-card ${it.key?'key':''}${it.booked?' booked':''}">${it.booked?'<span class="glare"></span>':''}<div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>
         ${it.n?`<div class="tl-note">${it.n}</div>`:""}${it.q?`<div style="margin-top:6px">${mapLinkHTML(it.q)}</div>`:""}</div>${thumb}</div></div>`;
   }).join("") + `</div><div class="spacer"></div>`;
   $("#day-content").innerHTML = html;
   document.querySelectorAll("#day-content .tl-card.meal").forEach(c => c.onclick = () => openMeal(+c.dataset.meal));
   observePhotos($("#day-content"));
+  wireBookedFX($("#day-content"));
   highlightNow(d, autoscroll);
 }
+
+/* ===== Reverse-holo interactivity: pointer (desktop) + gyroscope (mobile) ===== */
+function wireBookedFX(root){
+  (root||document).querySelectorAll(".tl-card.booked").forEach(card=>{
+    card.addEventListener("pointermove", ev=>{
+      if(ev.pointerType && ev.pointerType!=="mouse") return; // touch → handled by gyroscope
+      const r = card.getBoundingClientRect();
+      const gx = ((ev.clientX-r.left)/r.width - .5)*2;   // -1..1
+      const gy = ((ev.clientY-r.top)/r.height - .5)*2;
+      card.style.setProperty("--hx",(gx*30).toFixed(1)+"%");
+      card.style.setProperty("--hy",(gy*30).toFixed(1)+"%");
+      card.style.setProperty("--ry",(gx*9).toFixed(2)+"deg");
+      card.style.setProperty("--rx",(-gy*9).toFixed(2)+"deg");
+      card.style.setProperty("--pmag",Math.min(1,Math.hypot(gx,gy)).toFixed(2));
+      card.classList.add("lit");
+    });
+    card.addEventListener("pointerleave", ()=>card.classList.remove("lit"));
+  });
+}
+let motionRAF=null, mBeta=0, mGamma=0;
+function applyTilt(){
+  motionRAF=null;
+  const g = Math.max(-45,Math.min(45,mGamma));
+  const b = Math.max(-45,Math.min(45,mBeta-40));
+  const s = document.documentElement.style;
+  s.setProperty("--hx",(g/45*30).toFixed(1)+"%");
+  s.setProperty("--hy",(b/45*30).toFixed(1)+"%");
+  s.setProperty("--ry",(g/45*9).toFixed(2)+"deg");
+  s.setProperty("--rx",(-b/45*9).toFixed(2)+"deg");
+  s.setProperty("--pmag",Math.min(1,Math.hypot(g,b)/45).toFixed(2));
+}
+function onOrient(e){ if(e.gamma==null && e.beta==null) return; mGamma=e.gamma||0; mBeta=e.beta||0; if(!motionRAF) motionRAF=requestAnimationFrame(applyTilt); }
+function startMotion(){ window.addEventListener("deviceorientation",onOrient,true); document.documentElement.classList.add("motion-on"); const r=document.getElementById("motion-row"); if(r) r.style.display="none"; }
+function enableMotion(){
+  if(typeof DeviceOrientationEvent==="undefined") return;
+  if(typeof DeviceOrientationEvent.requestPermission==="function"){
+    DeviceOrientationEvent.requestPermission().then(st=>{ if(st==="granted") startMotion(); }).catch(()=>{});
+  } else { startMotion(); }
+}
+(function initMotion(){
+  const row=document.getElementById("motion-row"), btn=document.getElementById("motionbtn");
+  if(!row || !btn) return;
+  if(("DeviceOrientationEvent" in window) && window.matchMedia("(pointer: coarse)").matches){
+    row.style.display="block"; btn.onclick=enableMotion;
+  }
+})();
 
 /* Parse each item's start time into minutes-from-midnight, chronologically.
    Handles "7:18 AM", "9:00–9:30" (no AM/PM), "~10:45" by staying monotonic. */
