@@ -160,63 +160,26 @@
   /* ---------- Holographic "headliner" cards (booked main events) ---------- */
   .headliner{display:inline-block;font-family:'Space Grotesk',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:2px 9px;border-radius:20px;margin-bottom:6px;background:var(--holo);color:#0a0a12;box-shadow:0 0 11px rgba(196,181,247,.4);}
 
-  /* ===== Radiant Holofoil — real foil-texture layer (trainerbg) + theme rainbow over a dark card ===== */
+  /* ===== Dark holographic card — simple theme rainbow, gentle at rest, brighter on point/tilt ===== */
   .tl-card.booked{position:relative;overflow:hidden;border:1px solid #2b2b37;border-radius:12px;
-    background:#0a0b10;
-    box-shadow:0 10px 26px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
-    transform:perspective(760px) rotateX(var(--rx)) rotateY(var(--ry));
-    transform-style:preserve-3d;transition:transform .3s ease, box-shadow .3s ease;will-change:transform;}
-  .tl-card.booked .tc, .tl-card.booked .thumb{position:relative;z-index:5;}
-  /* keep text legible over the holo */
-  .tl-card.booked .tl-act{text-shadow:0 1px 3px rgba(0,0,0,.85);}
-  .tl-card.booked .tl-note, .tl-card.booked .meal-cta{text-shadow:0 1px 2px rgba(0,0,0,.8);}
-  /* base brushed-metal crosshatch — subtle silver at rest */
+    background:linear-gradient(135deg,#0b0c11,#15151d);
+    box-shadow:0 9px 24px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
+    transform:perspective(800px) rotateX(var(--rx)) rotateY(var(--ry));
+    transform-style:preserve-3d;transition:transform .3s ease;will-change:transform;}
+  .tl-card.booked .tc, .tl-card.booked .thumb{position:relative;z-index:3;}
+  .tl-card.booked .tl-act{text-shadow:0 1px 2px rgba(0,0,0,.6);}
+  /* the simple holographic rainbow wash */
   .tl-card.booked::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
-    --barwidth:1.2%;
-    background-image:
-      radial-gradient(farthest-corner ellipse at calc(var(--pointer-x)*.5 + 25%) calc(var(--pointer-y)*.5 + 25%), hsl(0,0%,90%) 20%, var(--card-glow) 130%),
-      repeating-linear-gradient(45deg, hsl(0,0%,8%) 0%, hsl(0,0%,8%) var(--barwidth), hsl(0,0%,20%) calc(var(--barwidth)*2), hsl(0,0%,34%) calc(var(--barwidth)*3), hsl(0,0%,44%) calc(var(--barwidth)*4), hsl(0,0%,34%) calc(var(--barwidth)*5), hsl(0,0%,20%) calc(var(--barwidth)*6), hsl(0,0%,8%) calc(var(--barwidth)*7), hsl(0,0%,0%) calc(var(--barwidth)*8), hsl(0,0%,0%) calc(var(--barwidth)*10)),
-      repeating-linear-gradient(-45deg, hsl(0,0%,8%) 0%, hsl(0,0%,8%) var(--barwidth), hsl(0,0%,20%) calc(var(--barwidth)*2), hsl(0,0%,34%) calc(var(--barwidth)*3), hsl(0,0%,44%) calc(var(--barwidth)*4), hsl(0,0%,34%) calc(var(--barwidth)*5), hsl(0,0%,20%) calc(var(--barwidth)*6), hsl(0,0%,8%) calc(var(--barwidth)*7), hsl(0,0%,0%) calc(var(--barwidth)*8), hsl(0,0%,0%) calc(var(--barwidth)*10));
-    background-size:cover, 210% 210%, 210% 210%;
-    background-position:center, 0% 0%, 0% 0%;
-    background-blend-mode:exclusion, darken, color-dodge;
-    filter:brightness(.45) contrast(2) saturate(1.6);
+    background:linear-gradient(115deg,
+      var(--sunpillar-1),var(--sunpillar-2),var(--sunpillar-3),var(--sunpillar-4),var(--sunpillar-5),var(--sunpillar-6),var(--sunpillar-1));
+    background-size:300% 300%;
     mix-blend-mode:color-dodge;
-    opacity:calc(.3 + var(--card-opacity)*.4);
-    animation:radiantShift 9s ease-in-out infinite;}
-  /* FOIL LAYER — real woven foil texture catching the theme rainbow (the part that moves) */
-  .tl-card.booked .foil{position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;
-    background-image:
-      url("img/foil.png"),
-      repeating-linear-gradient(55deg,
-        var(--sunpillar-1) 0%, var(--sunpillar-2) 4%, var(--sunpillar-3) 8%,
-        var(--sunpillar-4) 12%, var(--sunpillar-5) 16%, var(--sunpillar-6) 20%, var(--sunpillar-1) 24%);
-    background-size:34% auto, 200% 200%;
-    background-position:center, 0% 50%;
-    background-blend-mode:overlay;
-    filter:brightness(.85) contrast(1.5) saturate(1.7);
-    mix-blend-mode:color-dodge;
-    opacity:calc(.32 + var(--card-opacity)*.6);
-    animation:radiantFoil 9s ease-in-out infinite;}
-  /* GLITTER — authentic radiant sparkle, mostly on interaction */
-  .tl-card.booked::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;
-    background-image:url("img/glitter.png");
-    background-size:150px 150px;background-position:center;
-    mix-blend-mode:color-dodge;filter:brightness(.85) contrast(1.4);
-    opacity:calc(var(--card-opacity)*.4);transition:opacity .3s ease;}
-  /* GLARE — light-spot following the pointer/tilt */
-  .tl-card.booked .glare{position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:inherit;
-    background-image:radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y), hsla(0,0%,100%,.33) 0%, hsl(0,0%,22%) 110%);
-    mix-blend-mode:hard-light;filter:brightness(1) contrast(1.4);
-    opacity:calc(.06 + var(--card-opacity)*.4);transition:opacity .3s ease;}
-  @keyframes radiantShift{0%{background-position:center,0% 0%,0% 0%}50%{background-position:center,100% 100%,-100% 60%}100%{background-position:center,0% 0%,0% 0%}}
-  @keyframes radiantFoil{0%{background-position:center,0% 50%}50%{background-position:center,100% 50%}100%{background-position:center,0% 50%}}
-  /* interaction — pointer (desktop) / gyroscope (mobile) drives position, stops the idle shimmer */
+    opacity:calc(.16 + var(--card-opacity)*.5);
+    animation:holoGradient 7s ease infinite;transition:opacity .3s ease;}
   .tl-card.booked.lit::before, html.motion-on .tl-card.booked::before{animation:none;
-    background-position:center, calc((var(--background-x) - 50%)*1.5 + 50%) calc((var(--background-y) - 50%)*1.5 + 50%), calc((var(--background-x) - 50%)*1.5 + 50%) calc((var(--background-y) - 50%)*1.5 + 50%);}
-  .tl-card.booked.lit .foil, html.motion-on .tl-card.booked .foil{animation:none;
-    background-position:center, var(--background-x) var(--background-y);}
-  @media (prefers-reduced-motion: reduce){ .tl-card.booked::before,.tl-card.booked .foil{animation:none;} }
+    background-position:var(--background-x) var(--background-y);}
+  @keyframes holoGradient{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  @media (prefers-reduced-motion: reduce){ .tl-card.booked::before{animation:none;} }
   #motion-row{text-align:center;padding:2px 16px 0;}
   .motionbtn{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--lav);background:var(--card);border:1px solid var(--gold-soft);border-radius:30px;padding:7px 15px;cursor:pointer;}
 
@@ -755,7 +718,7 @@ function renderDay(id, autoscroll){
         ? `<div class="meal-cta">🔖 Reserved · tap for details ›</div>`
         : `<div class="meal-cta"><span class="opts">${g.opts.map(o=>`<i>${o.b}</i>`).join("")}</span> ${g.opts.length} options · tap to choose ›</div>`;
       return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
-        <div class="tl-card meal ${it.key?'key':''}${it.booked?' booked':''}" data-meal="${it.meal}">${it.booked?'<span class="foil"></span><span class="glare"></span>':''}<div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>${cta}</div></div></div>`;
+        <div class="tl-card meal ${it.key?'key':''}${it.booked?' booked':''}" data-meal="${it.meal}"><div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>${cta}</div></div></div>`;
     }
     const loc = Q2LOC[it.q];
     const wiki = loc ? loc.wiki : "";
@@ -771,7 +734,7 @@ function renderDay(id, autoscroll){
       </div>${thumb}</div></div>`;
     }
     return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
-      <div class="tl-card ${it.key?'key':''}${it.booked?' booked':''}">${it.booked?'<span class="foil"></span><span class="glare"></span>':''}<div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>
+      <div class="tl-card ${it.key?'key':''}${it.booked?' booked':''}"><div class="tc">${it.booked?'<span class="headliner">★ Headliner · Booked</span>':''}<div class="tl-act">${it.a}</div>
         ${it.n?`<div class="tl-note">${it.n}</div>`:""}${it.q?`<div style="margin-top:6px">${mapLinkHTML(it.q)}</div>`:""}</div>${thumb}</div></div>`;
   }).join("") + `</div><div class="spacer"></div>`;
   $("#day-content").innerHTML = html;
