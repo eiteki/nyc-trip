@@ -485,7 +485,7 @@ const FOOD = [
 
 const DAYS = [
   {
-    id:1, label:"Day 1", date:"Sat · Jun 27", title:"Midtown Warm-Up + Wicked",
+    id:1, iso:"2026-06-27", label:"Day 1", date:"Sat · Jun 27", title:"Midtown Warm-Up + Wicked",
     theme:"Fresh off the red-eye — easy pace, an afternoon nap, then opening curtain.",
     prep:"Folding umbrella + light jacket (theatre A/C runs cold).",
     reminders:["Allow 30+ min at immigration to collect bags","Confirm the plate before getting in the Uber (NYC yellow cabs ≠ Uber)","Download GalaPro before Wicked for translated captions","Hotel check-in isn't until 4 PM — drop bags first"],
@@ -510,7 +510,7 @@ const DAYS = [
     ],
   },
   {
-    id:2, label:"Day 2", date:"Sun · Jun 28", title:"Lady Liberty + Lower Manhattan + DUMBO",
+    id:2, iso:"2026-06-28", label:"Day 2", date:"Sun · Jun 28", title:"Lady Liberty + Lower Manhattan + DUMBO",
     theme:"The classic downtown day — from the Statue of Liberty to the Manhattan skyline at DUMBO.",
     prep:"Sunglasses, sunscreen, comfy shoes, water.",
     reminders:["Screenshot the Liberty QR codes to your photos (poor signal on the island)","Charge phones fully + bring a power bank","Pedestal ticket needs no passport","Hit the pedestal first (second security) before time runs short","DUMBO photo spot: Washington St × Water St"],
@@ -538,7 +538,7 @@ const DAYS = [
     ],
   },
   {
-    id:3, label:"Day 3", date:"Mon · Jun 29", title:"Neighborhood Walks + Empire State Sunset",
+    id:3, iso:"2026-06-29", label:"Day 3", date:"Mon · Jun 29", title:"Neighborhood Walks + Empire State Sunset",
     theme:"West side & downtown at a slow pace, a steakhouse lunch, capped by sunset atop the Empire State.",
     prep:"Comfy shoes — this is the most-walking day.",
     reminders:["Keens reservation 12:45 PM — arrive 5–10 min early, give the host your name","Empire State 7:45 PM — entrance at 20 West 34th St, take the 'red carpet' Express lane","Want the 102nd floor? Add it at the 86th-floor kiosk (~$35–38)","Pack your bags tonight — 7:30 AM departure tomorrow"],
@@ -729,15 +729,22 @@ function parseSeq(items){
   });
   return out;
 }
+function todayISO(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
 function highlightNow(d, autoscroll){
-  const mins = parseSeq(d.items);
-  const now = new Date(); const nowM = now.getHours()*60 + now.getMinutes();
-  let bi=0, bd=1e9;
-  mins.forEach((v,i)=>{ const dd=Math.abs(v-nowM); if(dd<bd){ bd=dd; bi=i; } });
-  const items = document.querySelectorAll("#day-content .tl-item");
-  if(items[bi]) items[bi].classList.add("now");
-  if(autoscroll && items[bi]) items[bi].scrollIntoView({behavior:"smooth", block:"center"});
-  else window.scrollTo({top:0, behavior:"smooth"});
+  // Only mark/scroll to "NOW" when today is actually this day of the trip.
+  if(d.iso === todayISO()){
+    const mins = parseSeq(d.items);
+    const now = new Date(); const nowM = now.getHours()*60 + now.getMinutes();
+    let bi=0, bd=1e9;
+    mins.forEach((v,i)=>{ const dd=Math.abs(v-nowM); if(dd<bd){ bd=dd; bi=i; } });
+    const items = document.querySelectorAll("#day-content .tl-item");
+    if(items[bi]) items[bi].classList.add("now");
+    if(autoscroll && items[bi]){ items[bi].scrollIntoView({behavior:"smooth", block:"center"}); return; }
+  }
+  window.scrollTo({top:0, behavior:"smooth"});
 }
 
 /* ---- Food tab ---- */
