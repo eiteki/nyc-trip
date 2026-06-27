@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>NYC · Idee + So Eun</title>
+
+<!-- Leaflet (interactive map) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Bold geometric sans (display) + clean body -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#000;
+    --bg-2:#0b0b0e;
+    --card:#0f0f13;
+    --card-2:#16161c;
+    --line:#26262f;
+    --ink:#f6f5fa;
+    --ink-dim:#bcb9c8;
+    --ink-faint:#7b788c;
+    --mint:#9ff0b5;
+    --peri:#8fa8f5;
+    --lav:#c4b5f7;
+    --pink:#efb3e4;
+    --gold:#c4b5f7;
+    --gold-soft:#6e5fb0;
+    --red:#ff7a96;
+    --green:#9ff0b5;
+    --blue:#8fa8f5;
+    --holo:linear-gradient(100deg,#9ff0b5 0%,#c1e7cb 18%,#c8bdf7 46%,#ecb8e6 72%,#b9c4f7 100%);
+    --nav-h:64px;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+    padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom));
+    overflow-x:hidden;position:relative;
+  }
+  body::before,body::after{content:"";position:fixed;z-index:-1;border-radius:50%;filter:blur(90px);pointer-events:none;}
+  body::before{width:300px;height:300px;top:-160px;right:-120px;opacity:.10;
+    background:radial-gradient(circle,#c8bdf7,#9ff0b5 60%,transparent 72%);}
+  body::after{width:380px;height:380px;bottom:40px;left:-120px;opacity:.20;
+    background:radial-gradient(circle,#efb8e6,#8fa8f5 60%,transparent 72%);}
+  a{color:inherit;text-decoration:none;}
+  .grad{background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent;}
+
+  .view{display:none;animation:fade .35s ease;}
+  .view.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .wrap{max-width:560px;margin:0 auto;padding:0 16px;}
+
+  /* ---------- Masthead ---------- */
+  .masthead{
+    position:relative;text-align:center;padding:26px 16px 20px;overflow:hidden;
+    background:linear-gradient(180deg,#000 0%,#000 55%,rgba(0,0,0,0) 100%),
+      radial-gradient(120% 90% at 50% 120%, rgba(180,170,235,.10), transparent 60%);
+  }
+  .masthead::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--holo);opacity:.9;}
+  .masthead .kicker{font-family:'Space Grotesk',sans-serif;letter-spacing:.4em;text-transform:uppercase;
+    font-size:9.5px;font-weight:500;margin-bottom:10px;
+    background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .masthead h1{font-family:'Playfair Display',serif;font-weight:800;font-size:36px;line-height:1.02;margin:0;letter-spacing:-.01em;
+    background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .masthead h1 .sm{display:block;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
+    color:var(--ink-dim);margin-top:9px;letter-spacing:.01em;-webkit-text-fill-color:var(--ink-dim);}
+  .rule{display:flex;align-items:center;gap:10px;margin:14px auto 2px;max-width:340px;}
+  .rule::before,.rule::after{content:"";height:1.5px;background:var(--holo);opacity:.5;flex:1;}
+  .rule span{font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-dim);}
+
+  /* ---------- Section header ---------- */
+  .sec-head{margin:26px 0 12px;display:flex;align-items:baseline;gap:10px;}
+  .sec-head h2{font-family:'Space Grotesk',sans-serif;text-transform:uppercase;letter-spacing:-.01em;font-weight:700;font-size:22px;margin:0;
+    background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .sec-head .tag{font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--lav);border:1px solid var(--gold-soft);padding:2px 8px;border-radius:20px;white-space:nowrap;}
+  .lead{color:var(--ink-dim);font-size:15px;line-height:1.5;}
+
+  /* ---------- Cards ---------- */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;margin-bottom:12px;}
+  .card h3{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;margin:0 0 4px;letter-spacing:-.01em;}
+  .muted{color:var(--ink-dim);font-size:13.5px;}
+  .faint{color:var(--ink-faint);font-size:12.5px;}
+  .kv{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px;}
+  .kv:last-child{border-bottom:0;}
+  .kv .k{color:var(--ink-faint);min-width:96px;font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;padding-top:2px;}
+  .kv .v{flex:1;}
+  .pill{display:inline-flex;align-items:center;gap:5px;font-family:'Space Grotesk',sans-serif;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:3px 10px;border-radius:20px;background:var(--card-2);border:1px solid var(--line);color:var(--ink-dim);}
+  .pill.gold{color:var(--lav);border-color:var(--gold-soft);}
+  .mlink{display:inline-flex;align-items:center;gap:5px;color:var(--lav);font-size:12.5px;font-weight:600;border-bottom:1px dotted var(--gold-soft);}
+  .mlink svg{width:13px;height:13px;}
+
+  /* ---------- Weather ---------- */
+  .wx{position:relative;display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:13px 16px;margin-bottom:14px;overflow:hidden;}
+  .wx::before{content:"";position:absolute;inset:0;background:var(--holo);opacity:.07;pointer-events:none;}
+  .wx>*{position:relative;}
+  .wx .icon{font-size:34px;line-height:1;}
+  .wx .temp{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:26px;line-height:1;}
+  .wx .temp small{font-size:13px;color:var(--ink-faint);font-weight:400;}
+  .wx .desc{font-size:13px;color:var(--ink-dim);}
+  .wx .rain{font-size:12px;color:var(--peri);}
+  .wx .col{flex:1;}
+
+  /* ---------- Timeline ---------- */
+  .tl{position:relative;margin:6px 0 0;padding-left:4px;}
+  .tl-item{position:relative;padding:0 0 4px 30px;}
+  .tl-item::before{content:"";position:absolute;left:8px;top:6px;bottom:-8px;width:2px;background:var(--line);}
+  .tl-item:last-child::before{display:none;}
+  .tl-dot{position:absolute;left:2px;top:5px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:2px solid var(--gold-soft);z-index:1;}
+  .tl-item.key .tl-dot{background:var(--holo);border:0;box-shadow:0 0 0 4px rgba(196,181,247,.16);}
+  .tl-time{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;letter-spacing:.02em;color:var(--lav);}
+  .tl-card{display:flex;gap:11px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 13px;margin:4px 0 14px;}
+  .tl-card.key{border-color:var(--gold-soft);background:linear-gradient(120deg,rgba(196,181,247,.10),rgba(159,240,181,.04) 70%,var(--card));}
+  .tl-card .tc{flex:1;min-width:0;}
+  .tl-act{font-size:14.5px;font-weight:500;margin-bottom:2px;}
+  .tl-note{font-size:12.5px;color:var(--ink-faint);}
+  .thumb{flex:0 0 58px;width:58px;height:58px;border-radius:10px;background:var(--card-2) center/cover no-repeat;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;color:var(--ink-faint);}
+  .thumb.has-photo{border-color:var(--gold-soft);color:transparent;}
+  .tl-card.meal{cursor:pointer;border-color:var(--gold-soft);background:linear-gradient(120deg,rgba(196,181,247,.12),rgba(159,240,181,.05) 70%,var(--card));}
+  .tl-card.meal:active{transform:scale(.99);}
+  .meal-cta{margin-top:7px;font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--lav);font-weight:600;display:flex;align-items:center;gap:6px;}
+  .meal-cta .opts{display:inline-flex;gap:3px;margin-right:2px;}
+  .meal-cta .opts i{width:18px;height:18px;border-radius:6px;background:var(--card-2);border:1px solid var(--gold-soft);font-style:normal;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--lav);}
+
+  .reminders{position:relative;background:var(--card);border:1px solid #4a2e3e;border-radius:var(--radius);padding:13px 16px;margin-bottom:14px;overflow:hidden;}
+  .reminders::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 100% at 0% 0%,rgba(255,122,150,.12),transparent 60%);pointer-events:none;}
+  .reminders>*{position:relative;}
+  .reminders h4{font-family:'Space Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.08em;font-size:12px;color:var(--red);margin:0 0 8px;}
+  .reminders ul{margin:0;padding-left:18px;}
+  .reminders li{font-size:13px;margin-bottom:5px;color:var(--ink-dim);}
+
+  /* ---------- Day selector ---------- */
+  .daybar{display:flex;gap:8px;overflow-x:auto;padding:14px 16px 6px;scrollbar-width:none;}
+  .daybar::-webkit-scrollbar{display:none;}
+  .daychip{flex:0 0 auto;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;letter-spacing:.02em;padding:8px 16px;border-radius:30px;border:1px solid var(--line);background:var(--card);color:var(--ink-dim);text-transform:uppercase;transition:.2s;}
+  .daychip.active{background:var(--holo);color:#0a0a12;border-color:transparent;}
+  .daychip small{display:block;font-size:9px;letter-spacing:.08em;opacity:.7;font-weight:500;}
+
+  /* ---------- Food tab (meal slots) ---------- */
+  .food-day{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:22px 0 10px;}
+  .mealslot{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:9px;cursor:pointer;transition:.15s;}
+  .mealslot:active{transform:scale(.99);}
+  .mealslot.confirmed{border-color:var(--gold-soft);}
+  .mealslot .mi{font-size:24px;flex:0 0 auto;}
+  .mealslot .mc{flex:1;min-width:0;}
+  .mealslot .mt{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15.5px;}
+  .mealslot .mw{font-size:12.5px;color:var(--ink-dim);}
+  .mealslot .mr{flex:0 0 auto;font-family:'Space Grotesk',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--lav);text-align:right;display:flex;align-items:center;gap:7px;}
+  .mealslot .chev{color:var(--ink-faint);font-size:18px;}
+  .mealslot.confirmed .mr{color:var(--mint);}
+
+  /* ---------- Checklist ---------- */
+  .chk{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;cursor:pointer;}
+  .chk:last-child{border-bottom:0;}
+  .chk .box{flex:0 0 19px;height:19px;border-radius:6px;border:2px solid var(--ink-faint);margin-top:1px;display:flex;align-items:center;justify-content:center;transition:.15s;}
+  .chk.done .box{background:var(--holo);border-color:transparent;}
+  .chk.done .box::after{content:"✓";color:#0a0a12;font-size:12px;font-weight:700;}
+  .chk.done .txt{color:var(--ink-faint);text-decoration:line-through;}
+
+  /* ---------- Map ---------- */
+  #map{width:100%;height:calc(100vh - var(--nav-h) - 116px);min-height:340px;background:var(--bg-2);}
+  .maptop{padding:14px 16px 10px;position:relative;}
+  .maptop::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--holo);opacity:.6;}
+  .legend{display:flex;flex-wrap:wrap;gap:9px;margin-top:10px;}
+  .legend .lg{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-dim);font-family:'Space Grotesk',sans-serif;letter-spacing:.03em;text-transform:uppercase;}
+  .legend .dot{width:11px;height:11px;border-radius:50%;border:1.5px solid rgba(0,0,0,.5);}
+  .leaflet-popup-content-wrapper{background:var(--card);color:var(--ink);border:1px solid var(--gold-soft);border-radius:12px;}
+  .leaflet-popup-tip{background:var(--card);border:1px solid var(--gold-soft);}
+  .leaflet-popup-content{margin:11px 13px;font-family:'Inter',sans-serif;min-width:170px;}
+  .pop-photo{height:96px;border-radius:9px;background:var(--card-2) center/cover no-repeat;margin:0 0 8px;border:1px solid var(--line);}
+  .pop-photo.has-photo{border-color:var(--gold-soft);}
+  .pop-t{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;margin-bottom:2px;}
+  .pop-c{font-size:11px;color:var(--mint);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+  .leaflet-container a.pop-link{color:var(--lav);font-weight:600;font-size:12.5px;}
+  /* zoom-based labels */
+  .leaflet-tooltip.pin-label{background:rgba(10,10,16,.86);border:1px solid #33333d;color:#f0eef6;font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:10px;padding:2px 6px;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.5);white-space:nowrap;}
+  .leaflet-tooltip.pin-label::before{display:none;}
+  #map:not(.show-labels) .leaflet-tooltip.pin-label{display:none;}
+
+  /* ---------- Bottom sheet ---------- */
+  #sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .25s;z-index:1500;}
+  #sheet-backdrop.open{opacity:1;pointer-events:auto;}
+  #sheet{position:fixed;left:0;right:0;bottom:0;z-index:1600;background:var(--bg-2);border-top:1px solid var(--gold-soft);border-radius:22px 22px 0 0;transform:translateY(102%);transition:transform .32s cubic-bezier(.2,.85,.2,1);max-height:88vh;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom);overflow:hidden;}
+  #sheet.open{transform:translateY(0);}
+  #sheet::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--holo);}
+  .sheet-handle{width:42px;height:4px;border-radius:3px;background:var(--line);margin:11px auto 2px;flex:0 0 auto;}
+  .sheet-head{padding:6px 18px 12px;flex:0 0 auto;}
+  .sheet-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:21px;letter-spacing:-.01em;
+    background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .sheet-sub{font-size:12.5px;color:var(--ink-faint);margin-top:2px;}
+  .sheet-body{overflow-y:auto;padding:0 16px 22px;-webkit-overflow-scrolling:touch;}
+  .sopt{background:var(--card);border:1px solid var(--line);border-radius:15px;overflow:hidden;margin-bottom:13px;}
+  .sopt.confirmed{border-color:var(--gold-soft);}
+  .sopt-photo{position:relative;height:158px;background:var(--card-2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;}
+  .sopt-photo.placeholder{background:var(--holo);}
+  .sopt-photo.placeholder::after{content:attr(data-emoji);font-size:54px;filter:saturate(1.1);}
+  .sopt-photo.has-photo::after{content:"";}
+  .sopt-badge{position:absolute;top:11px;left:11px;width:30px;height:30px;border-radius:9px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.25);}
+  .sopt.confirmed .sopt-badge{background:var(--holo);color:#0a0a12;border-color:transparent;}
+  .sopt-body{padding:12px 15px 14px;}
+  .sopt-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16.5px;letter-spacing:-.01em;}
+  .sopt-meta{font-size:13px;color:var(--ink-dim);margin-top:2px;}
+  .sopt-price{font-family:'Space Grotesk',sans-serif;color:var(--mint);font-size:13px;font-weight:600;}
+  .sopt-note{font-size:12.5px;color:var(--ink-faint);margin-top:6px;line-height:1.45;}
+  .sopt-link{margin-top:9px;}
+
+  /* ---------- Bottom nav ---------- */
+  nav.tabbar{position:fixed;left:0;right:0;bottom:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);
+    background:rgba(8,8,10,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line);display:flex;z-index:1000;}
+  nav.tabbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1.5px;background:var(--holo);opacity:.55;}
+  nav.tabbar button{flex:1;background:none;border:0;color:var(--ink-faint);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;padding-top:8px;transition:.2s;}
+  nav.tabbar button .ic{display:flex;align-items:center;justify-content:center;height:23px;}
+  nav.tabbar button .ic svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+  nav.tabbar button.active{color:var(--mint);}
+  nav.tabbar button.active .ic{transform:translateY(-1px);filter:drop-shadow(0 0 7px rgba(159,240,181,.55));}
+
+  .foot{text-align:center;color:var(--ink-faint);font-size:11px;padding:24px 16px 30px;}
+  .spacer{height:8px;}
+</style>
+</head>
+<body>
+
+<!-- =================== TRIP / OVERVIEW =================== -->
+<section class="view active" id="view-trip">
+  <header class="masthead">
+    <div class="kicker">Three Days · All In, All Win · Est. 2026</div>
+    <h1>The New York Itinerary<span class="sm">Idee &amp; So&nbsp;Eun · Jun 27 – 29, 2026</span></h1>
+    <div class="rule"><span>Fri Jun 26 — Tue Jun 30</span></div>
+  </header>
+  <div class="wrap">
+    <div class="sec-head"><h2>At a Glance</h2><span class="tag">The Brief</span></div>
+    <p class="lead">Just off a red-eye and into the lights — three unhurried days from the Statue of Liberty to the top of the Empire State, with Wicked on opening night.</p>
+    <div class="card">
+      <div class="kv"><span class="k">Travelers</span><span class="v">Idee + So Eun</span></div>
+      <div class="kv"><span class="k">Dates</span><span class="v">Jun 27 (Sat) – Jun 29 (Mon), 2026</span></div>
+      <div class="kv"><span class="k">Season</span><span class="v">Late June · 81–90°F days, mild evenings, high rain chance — pack a folding umbrella</span></div>
+      <div class="kv"><span class="k">Sunset</span><span class="v">~8:30 PM</span></div>
+    </div>
+
+    <div class="sec-head"><h2>The Hotel</h2><span class="tag">Base Camp</span></div>
+    <div class="card">
+      <h3>Renaissance New York Times Square ⭐</h3>
+      <p class="muted" style="margin:2px 0 8px">714 Seventh Avenue, NY 10036 — Times Square at 48th St</p>
+      <a class="mlink" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Renaissance+New+York+Times+Square+Hotel+714+7th+Avenue">📍 Open in Google Maps</a>
+      <div class="spacer"></div>
+      <div class="kv"><span class="k">Check-in</span><span class="v">4:00 PM (early bag drop OK)</span></div>
+      <div class="kv"><span class="k">Check-out</span><span class="v">11:00 AM (pack the night before — 7:30 AM airport run on 6/30)</span></div>
+      <div class="kv"><span class="k">Subway</span><span class="v">49 St (N/R/W) — 1 min right out the door · Times Sq–42 St — 5 min, every line</span></div>
+      <div class="kv"><span class="k">Front desk</span><span class="v"><a class="mlink" href="tel:+12127657676">+1 212-765-7676</a></span></div>
+    </div>
+
+    <div class="sec-head"><h2>Flights</h2><span class="tag">United</span></div>
+    <div class="card">
+      <div class="kv"><span class="k">Outbound</span><span class="v">SEA → EWR · Jun 26, 11:00 PM → Jun 27, 7:18 AM</span></div>
+      <div class="kv"><span class="k">Return</span><span class="v">EWR → SEA · Jun 30, 11:05 AM → 2:16 PM</span></div>
+      <a class="mlink" style="margin-top:8px" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Newark+Liberty+International+Airport">📍 Newark Liberty (EWR)</a>
+    </div>
+
+    <div class="sec-head"><h2>Booked &amp; Ticketed</h2><span class="tag">Locked In</span></div>
+    <div class="card">
+      <div class="kv"><span class="k">Sat 6/27</span><span class="v">🎭 <b>Wicked</b> @ Gershwin Theatre · 8:00 PM · Front-center premium ×2</span></div>
+      <div class="kv"><span class="k">Sun 6/28</span><span class="v">🗽 <b>Statue of Liberty + Ellis Island</b> (Pedestal) · 11:00 AM security · QR ×2</span></div>
+      <div class="kv"><span class="k">Mon 6/29</span><span class="v">🥩 <b>Keens Steakhouse</b> lunch · 12:45 PM · Resy ×2</span></div>
+      <div class="kv"><span class="k">Mon 6/29</span><span class="v">🏙️ <b>Empire State 86F + Express</b> · 7:45 PM · Conf <b>7WHHNG8H</b></span></div>
+    </div>
+
+    <div class="sec-head"><h2>Getting Around</h2><span class="tag">Uber + Subway</span></div>
+    <div class="card">
+      <p class="muted" style="margin-top:0"><b style="color:var(--ink)">Primary: Uber · Backup: Subway.</b> Uber for the airport, post-show nights, heavy bags, and rain. Subway for daytime hops downtown (faster &amp; cheaper than Uber).</p>
+      <div class="kv"><span class="k">EWR → Hotel</span><span class="v">45–60 min · $70–100 (red-eye landing = surge)</span></div>
+      <div class="kv"><span class="k">Hotel → EWR</span><span class="v">60–75 min · $70–100</span></div>
+      <div style="margin-top:10px;font-size:13px;color:var(--ink-dim)">
+        <b style="color:var(--mint);font-family:'Space Grotesk';letter-spacing:.04em;text-transform:uppercase;font-size:12px;">Subway tips</b>
+        <ul style="margin:6px 0 0;padding-left:18px">
+          <li>Tap a contactless card (OMNY) — no MetroCard needed</li>
+          <li>$2.90 a ride; free after your 12th tap within 24h on the same card</li>
+          <li>Each person taps their <i>own</i> card — can't share</li>
+          <li>Mind <b>Uptown</b> (north) vs <b>Downtown</b> (south) — wrong way = tap out &amp; re-enter</li>
+          <li>Open Google Maps before boarding for next-stop guidance</li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot">Compiled by Idee · last updated Jun 26, 2026.</div>
+  </div>
+</section>
+
+<!-- =================== DAYS =================== -->
+<section class="view" id="view-days">
+  <header class="masthead"><div class="kicker">Day by Day</div><h1 style="font-size:32px">The Daily Plan</h1></header>
+  <div class="daybar" id="daybar"></div>
+  <div class="wrap" id="day-content"></div>
+</section>
+
+<!-- =================== MAP =================== -->
+<section class="view" id="view-map">
+  <div class="maptop">
+    <div class="sec-head" style="margin:0"><h2 style="font-size:20px">The City Map</h2><span class="tag">All Pins</span></div>
+    <p class="faint" style="margin:6px 0 0">Tap a pin for a photo &amp; directions · zoom in to reveal names.</p>
+    <div class="legend">
+      <span class="lg"><span class="dot" style="background:#9ff0b5"></span>Attraction</span>
+      <span class="lg"><span class="dot" style="background:#efb3e4"></span>Food</span>
+      <span class="lg"><span class="dot" style="background:#8fa8f5"></span>Transit</span>
+      <span class="lg"><span class="dot" style="background:#c4b5f7"></span>Hotel</span>
+    </div>
+  </div>
+  <div id="map"></div>
+</section>
+
+<!-- =================== FOOD =================== -->
+<section class="view" id="view-food">
+  <header class="masthead">
+    <div class="kicker">The Tasting Notes</div><h1 style="font-size:32px">Where to Eat</h1>
+    <div class="rule"><span>Tap a meal to see the options</span></div>
+  </header>
+  <div class="wrap" id="food-content"></div>
+</section>
+
+<!-- =================== PREP =================== -->
+<section class="view" id="view-prep">
+  <header class="masthead"><div class="kicker">Before You Fly</div><h1 style="font-size:32px">The Checklist</h1></header>
+  <div class="wrap" id="prep-content"></div>
+</section>
+
+<!-- =================== BOTTOM SHEET =================== -->
+<div id="sheet-backdrop"></div>
+<div id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head"><div class="sheet-title" id="sheet-title"></div><div class="sheet-sub" id="sheet-sub"></div></div>
+  <div class="sheet-body" id="sheet-body"></div>
+</div>
+
+<!-- =================== BOTTOM NAV =================== -->
+<nav class="tabbar">
+  <button data-view="trip" class="active"><span class="ic"><svg viewBox="0 0 24 24"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg></span>Trip</button>
+  <button data-view="days"><span class="ic"><svg viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg></span>Days</button>
+  <button data-view="map"><span class="ic"><svg viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg></span>Map</button>
+  <button data-view="food"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></span>Food</button>
+  <button data-view="prep"><span class="ic"><svg viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg></span>Prep</button>
+</nav>
+
+<script>
+/* ============================================================
+   DATA
+   ============================================================ */
+const gmap = q => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+
+const LOCATIONS = [
+  {n:"Renaissance Times Square Hotel", c:"hotel", q:"Renaissance New York Times Square Hotel 714 7th Avenue", lat:40.7596, lng:-73.9845, wiki:""},
+  {n:"Times Square", c:"attraction", q:"Times Square New York", lat:40.7580, lng:-73.9855, wiki:"Times Square"},
+  {n:"New York Public Library", c:"attraction", q:"New York Public Library Stephen A Schwarzman Building", lat:40.7532, lng:-73.9822, wiki:"New York Public Library Main Branch"},
+  {n:"Bryant Park", c:"attraction", q:"Bryant Park New York", lat:40.7536, lng:-73.9832, wiki:"Bryant Park"},
+  {n:"Rockefeller Center", c:"attraction", q:"Rockefeller Center", lat:40.7587, lng:-73.9787, wiki:"Rockefeller Center"},
+  {n:"St. Patrick's Cathedral", c:"attraction", q:"St Patrick Cathedral New York", lat:40.7585, lng:-73.9759, wiki:"St. Patrick's Cathedral (Manhattan)"},
+  {n:"Fifth Avenue", c:"attraction", q:"Fifth Avenue New York", lat:40.7625, lng:-73.9740, wiki:"Fifth Avenue"},
+  {n:"Central Park South", c:"attraction", q:"Central Park South", lat:40.7660, lng:-73.9760, wiki:"Central Park"},
+  {n:"Gershwin Theatre (Wicked)", c:"attraction", q:"Gershwin Theatre New York", lat:40.7625, lng:-73.9838, wiki:"Gershwin Theatre"},
+  {n:"Koreatown (32nd St)", c:"attraction", q:"Koreatown Manhattan 32nd Street", lat:40.7476, lng:-73.9870, wiki:"Koreatown, Manhattan"},
+  {n:"Battery Park", c:"attraction", q:"Battery Park New York", lat:40.7033, lng:-74.0170, wiki:"The Battery (Manhattan)"},
+  {n:"Statue of Liberty", c:"attraction", q:"Liberty Island New York", lat:40.6892, lng:-74.0445, wiki:"Statue of Liberty"},
+  {n:"Ellis Island", c:"attraction", q:"Ellis Island National Museum", lat:40.6995, lng:-74.0397, wiki:"Ellis Island"},
+  {n:"Charging Bull", c:"attraction", q:"Charging Bull Wall Street", lat:40.7056, lng:-74.0134, wiki:"Charging Bull"},
+  {n:"Wall Street", c:"attraction", q:"Wall Street New York", lat:40.7069, lng:-74.0113, wiki:"Wall Street"},
+  {n:"Federal Hall", c:"attraction", q:"Federal Hall National Memorial", lat:40.7073, lng:-74.0102, wiki:"Federal Hall"},
+  {n:"Trinity Church", c:"attraction", q:"Trinity Church Wall Street", lat:40.7081, lng:-74.0125, wiki:"Trinity Church (Manhattan)"},
+  {n:"9/11 Memorial", c:"attraction", q:"9 11 Memorial New York", lat:40.7115, lng:-74.0134, wiki:"National September 11 Memorial & Museum"},
+  {n:"Oculus", c:"attraction", q:"Oculus World Trade Center", lat:40.7117, lng:-74.0110, wiki:"World Trade Center Transportation Hub"},
+  {n:"Brooklyn Bridge", c:"attraction", q:"Brooklyn Bridge Manhattan Entrance", lat:40.7061, lng:-73.9969, wiki:"Brooklyn Bridge"},
+  {n:"DUMBO · Washington & Water St", c:"attraction", q:"Washington St and Water St Brooklyn", lat:40.7036, lng:-73.9905, wiki:"Dumbo, Brooklyn"},
+  {n:"Brooklyn Bridge Park / Pebble Beach", c:"attraction", q:"Brooklyn Bridge Park Pebble Beach", lat:40.7026, lng:-73.9967, wiki:"Brooklyn Bridge Park"},
+  {n:"Chinatown", c:"attraction", q:"Chinatown Manhattan", lat:40.7158, lng:-73.9970, wiki:"Chinatown, Manhattan"},
+  {n:"Little Italy", c:"attraction", q:"Little Italy Manhattan", lat:40.7191, lng:-73.9973, wiki:"Little Italy, Manhattan"},
+  {n:"SoHo", c:"attraction", q:"SoHo New York", lat:40.7233, lng:-74.0030, wiki:"SoHo, Manhattan"},
+  {n:"West Village", c:"attraction", q:"West Village New York", lat:40.7358, lng:-74.0036, wiki:"West Village"},
+  {n:"Meatpacking District", c:"attraction", q:"Meatpacking District New York", lat:40.7409, lng:-74.0078, wiki:"Meatpacking District, Manhattan"},
+  {n:"High Line", c:"attraction", q:"High Line New York", lat:40.7480, lng:-74.0048, wiki:"High Line"},
+  {n:"Hudson Yards · Vessel", c:"attraction", q:"Vessel Hudson Yards", lat:40.7538, lng:-74.0019, wiki:"Vessel (structure)"},
+  {n:"Empire State Building", c:"attraction", q:"Empire State Building", lat:40.7484, lng:-73.9857, wiki:"Empire State Building"},
+  // Restaurants
+  {n:"Keens Steakhouse ✅", c:"food", q:"Keens Steakhouse 72 West 36th Street", lat:40.7505, lng:-73.9858, wiki:"Keens Steakhouse"},
+  {n:"Ess-a-Bagel", c:"food", q:"Ess a Bagel 3rd Avenue 51st Street", lat:40.7556, lng:-73.9700, wiki:"Ess-a-Bagel"},
+  {n:"Sarabeth's Central Park South", c:"food", q:"Sarabeth's Central Park South", lat:40.7660, lng:-73.9800, wiki:"Sarabeth's"},
+  {n:"Bluestone Lane (Bryant Park)", c:"food", q:"Bluestone Lane Bryant Park", lat:40.7540, lng:-73.9840, wiki:"Bluestone Lane"},
+  {n:"Cote Korean Steakhouse", c:"food", q:"Cote Korean Steakhouse New York", lat:40.7409, lng:-73.9911, wiki:"Cote (restaurant)"},
+  {n:"Jongro BBQ", c:"food", q:"Jongro BBQ 32nd Street", lat:40.7479, lng:-73.9858, wiki:""},
+  {n:"BCD Tofu House", c:"food", q:"BCD Tofu House 32nd Street", lat:40.7478, lng:-73.9862, wiki:"BCD Tofu House"},
+  {n:"Junior's Cheesecake", c:"food", q:"Junior's Restaurant Times Square 45th Street", lat:40.7587, lng:-73.9852, wiki:"Junior's Restaurant"},
+  {n:"Levain Bakery (W 46th)", c:"food", q:"Levain Bakery West 46th Street", lat:40.7595, lng:-73.9870, wiki:"Levain Bakery"},
+  {n:"Stone Street", c:"food", q:"Stone Street New York", lat:40.7042, lng:-74.0113, wiki:"Stone Street (Manhattan)"},
+  {n:"Celestine (DUMBO)", c:"food", q:"Celestine John Street Brooklyn", lat:40.7026, lng:-73.9890, wiki:""},
+  {n:"The River Café", c:"food", q:"The River Cafe Brooklyn", lat:40.7036, lng:-73.9956, wiki:"The River Café"},
+  {n:"Cecconi's DUMBO", c:"food", q:"Cecconi's DUMBO Brooklyn", lat:40.7033, lng:-73.9901, wiki:""},
+  {n:"Katz's Delicatessen", c:"food", q:"Katz's Delicatessen 205 East Houston Street", lat:40.7223, lng:-73.9874, wiki:"Katz's Delicatessen"},
+  // Transit
+  {n:"Times Sq–42 St Station", c:"transit", q:"Times Square 42 Street Subway Station", lat:40.7557, lng:-73.9870, wiki:""},
+  {n:"South Ferry Station", c:"transit", q:"South Ferry Subway Station Manhattan", lat:40.7020, lng:-74.0132, wiki:""},
+  {n:"34 St–Herald Sq Station", c:"transit", q:"34th Street Herald Square Subway Station", lat:40.7497, lng:-73.9876, wiki:""},
+  {n:"34 St–Hudson Yards Station", c:"transit", q:"34 Street Hudson Yards Subway Station", lat:40.7559, lng:-74.0014, wiki:""},
+  {n:"Newark Liberty Airport (EWR)", c:"transit", q:"Newark Liberty International Airport", lat:40.6895, lng:-74.1745, wiki:"Newark Liberty International Airport"},
+];
+const Q2WIKI = {}; LOCATIONS.forEach(l=>{ if(l.wiki) Q2WIKI[l.q]=l.wiki; });
+
+const WEATHER = {
+  1:{date:"2026-06-27", icon:"⛅", hi:84, lo:70, rain:55, desc:"Warm, humid, scattered showers"},
+  2:{date:"2026-06-28", icon:"☀️", hi:88, lo:72, rain:30, desc:"Mostly sunny — sunscreen on Liberty Island"},
+  3:{date:"2026-06-29", icon:"🌦️", hi:86, lo:71, rain:45, desc:"Sun with afternoon storm risk"},
+};
+
+/* ---- Meal options (each = a flexible slot with A/B/C choices) ---- */
+const FOOD = [
+  // index 0 — Day 3 lunch (confirmed)
+  {day:3, icon:"🥩", title:"Lunch — Keens", when:"Mon 12:45 PM · Reserved (Resy)", confirmed:true, opts:[
+    {b:"✓", name:"Keens Steakhouse", meta:"Mutton chop / porterhouse legend", price:"Resy booked", note:"The one sure thing — already reserved.", q:"Keens Steakhouse 72 West 36th Street", wiki:"Keens Steakhouse", confirmed:true},
+  ]},
+  // 1 — Day 1 brunch
+  {day:1, icon:"🥯", title:"Brunch", when:"Sat ~10:30 AM · near the hotel", opts:[
+    {b:"A", name:"Ess-a-Bagel", meta:"Classic NYC bagel + cream cheese", price:"$15–25", note:"15 min walk; 15–30 min wait possible.", q:"Ess a Bagel 3rd Avenue 51st Street", wiki:"Ess-a-Bagel"},
+    {b:"B", name:"Sarabeth's Central Park South", meta:"Classic NYC brunch", price:"$25–35", note:"Leisurely sit-down; pairs with Central Park.", q:"Sarabeth's Central Park South", wiki:"Sarabeth's"},
+    {b:"C", name:"Bluestone Lane (Bryant Park)", meta:"Aussie café + bites", price:"$15–20", note:"Fastest; right by the NYPL.", q:"Bluestone Lane Bryant Park", wiki:"Bluestone Lane"},
+  ]},
+  // 2 — Day 1 K-town dinner
+  {day:1, icon:"🍖", title:"Koreatown Dinner", when:"Sat ~6 PM · pre-Wicked", opts:[
+    {b:"A", name:"Cote Korean Steakhouse", meta:"1-Michelin-star KBBQ", price:"$85+ prix fixe", note:"Reserve ahead — may be full.", q:"Cote Korean Steakhouse New York", wiki:"Cote (restaurant)"},
+    {b:"B", name:"Jongro BBQ", meta:"Traditional charcoal grill", price:"$50–70", note:"No reservations; 30–60 min Sat wait.", q:"Jongro BBQ 32nd Street", wiki:""},
+    {b:"C", name:"BCD Tofu House", meta:"Korean tofu stew", price:"$25–35", note:"Quick, light, comfy — top pre-show pick.", q:"BCD Tofu House 32nd Street", wiki:"BCD Tofu House"},
+  ]},
+  // 3 — Day 1 dessert
+  {day:1, icon:"🍰", title:"Late Dessert", when:"Sat ~11 PM · after the show", opts:[
+    {b:"A", name:"Junior's Cheesecake", meta:"Legendary NYC cheesecake", price:"$10–15", note:"5 min walk; open late.", q:"Junior's Restaurant Times Square 45th Street", wiki:"Junior's Restaurant"},
+    {b:"B", name:"Levain Bakery (W 46th)", meta:"Giant American cookies", price:"$5–8", note:"May already be closed by 10 PM.", q:"Levain Bakery West 46th Street", wiki:"Levain Bakery"},
+    {b:"C", name:"Skip", meta:"Early start tomorrow", price:"—", note:"Save it — Liberty Island day starts early.", q:"", wiki:""},
+  ]},
+  // 4 — Day 2 breakfast
+  {day:2, icon:"☕", title:"Breakfast", when:"Sun ~8 AM · make it quick", opts:[
+    {b:"A", name:"Hotel room service", meta:"See the menu", price:"varies", note:"Least effort before a big day.", q:"", wiki:""},
+    {b:"B", name:"Ess-a-Bagel grab-and-go", meta:"NYC bagel", price:"$15", note:"On the way if you skipped Day 1.", q:"Ess a Bagel 3rd Avenue 51st Street", wiki:"Ess-a-Bagel"},
+    {b:"C", name:"Pret a Manger", meta:"Coffee + sandwich", price:"$10–15", note:"Fastest, cheapest.", q:"Pret a Manger Times Square", wiki:"Pret a Manger"},
+  ]},
+  // 5 — Day 2 lunch
+  {day:2, icon:"🥪", title:"Lunch", when:"Sun ~12:30 · ferry window", opts:[
+    {b:"A", name:"Liberty / Ellis Island café", meta:"Tourist fare", price:"$15–25", note:"Convenient, no detour.", q:"Liberty Island New York", wiki:"Statue of Liberty"},
+    {b:"B", name:"Pack a light lunch", meta:"Grab in the morning", price:"$10", note:"No alcohol/glass through security.", q:"", wiki:""},
+    {b:"C", name:"Stone Street late lunch", meta:"Historic downtown lane", price:"$20–30", note:"e.g. Adrienne's Pizza Bar, Fraunces Tavern (1762).", q:"Stone Street New York", wiki:"Stone Street (Manhattan)"},
+  ]},
+  // 6 — Day 2 DUMBO dinner
+  {day:2, icon:"⭐", title:"DUMBO Dinner", when:"Sun ~7:30 PM · the big one", opts:[
+    {b:"A", name:"Celestine", meta:"Mediterranean · two-bridge window view", price:"$150–200 / two", note:"Rave reviews; reserve ahead.", q:"Celestine John Street Brooklyn", wiki:""},
+    {b:"B", name:"The River Café", meta:"Michelin fine dining", price:"$400+ / two", note:"Dress code; must reserve.", q:"The River Cafe Brooklyn", wiki:"The River Café"},
+    {b:"C", name:"Cecconi's DUMBO", meta:"Italian at Empire Stores", price:"$120–160 / two", note:"Relaxed & cozy.", q:"Cecconi's DUMBO Brooklyn", wiki:""},
+  ]},
+  // 7 — Day 3 breakfast
+  {day:3, icon:"🥐", title:"Breakfast", when:"Mon ~9 AM · light (save room for Keens)", opts:[
+    {b:"A", name:"Ess-a-Bagel", meta:"Half a bagel is plenty", price:"$15", note:"Save room for Keens.", q:"Ess a Bagel 3rd Avenue 51st Street", wiki:"Ess-a-Bagel"},
+    {b:"B", name:"Café near hotel", meta:"Light bite", price:"$10", note:"Save room for Keens.", q:"", wiki:""},
+    {b:"C", name:"Skip", meta:"Fruit / snack", price:"—", note:"Most room for the steakhouse lunch.", q:"", wiki:""},
+  ]},
+  // 8 — Day 3 late dinner
+  {day:3, icon:"🌃", title:"Late Dinner", when:"Mon ~10 PM · after the Empire State", opts:[
+    {b:"A", name:"Katz's Delicatessen", meta:"1888 pastrami legend", price:"$50–60 / two", note:"Share one; ~10 min Uber from ESB; $50 lost-ticket fee.", q:"Katz's Delicatessen 205 East Houston Street", wiki:"Katz's Delicatessen"},
+    {b:"B", name:"Koreatown late dinner", meta:"Affordable Korean", price:"$40–60", note:"15 min walk from the hotel.", q:"Koreatown Manhattan 32nd Street", wiki:"Koreatown, Manhattan"},
+    {b:"C", name:"Skip", meta:"Pack & sleep", price:"—", note:"Early 7:30 AM departure tomorrow.", q:"", wiki:""},
+  ]},
+];
+
+const DAYS = [
+  {
+    id:1, label:"Day 1", date:"Sat · Jun 27", title:"Midtown Warm-Up + Wicked",
+    theme:"Fresh off the red-eye — easy pace, an afternoon nap, then opening curtain.",
+    prep:"Folding umbrella + light jacket (theatre A/C runs cold).",
+    reminders:["Allow 30+ min at immigration to collect bags","Confirm the plate before getting in the Uber (NYC yellow cabs ≠ Uber)","Download GalaPro before Wicked for translated captions","Hotel check-in isn't until 4 PM — drop bags first"],
+    items:[
+      {t:"7:18 AM", key:true, a:"Arrive EWR (Newark)", n:"~30 min from gate to exit on a domestic arrival", q:"Newark Liberty International Airport"},
+      {t:"8:00 AM", a:"Uber to the hotel", n:"Morning rush could mean 60+ min"},
+      {t:"9:00–9:30", key:true, a:"Arrive hotel · drop bags at desk", n:"Keep toiletries in your day bag", q:"Renaissance New York Times Square Hotel"},
+      {t:"10:00–11:30", a:"🍽️ Brunch", meal:1},
+      {t:"11:30–1:00", a:"Times Square photos & big screens", n:"Right downstairs", q:"Times Square New York"},
+      {t:"1:00–2:00", a:"📚 New York Public Library (42 & 5th)", n:"Rose Reading Room, Astor Hall — free", q:"New York Public Library Stephen A Schwarzman Building"},
+      {t:"2:00–2:30", a:"☕ Bryant Park sit-down", n:"Right behind the NYPL", q:"Bryant Park New York"},
+      {t:"2:30–3:30", a:"Rockefeller → St. Patrick's → Fifth Ave stroll", n:"Heading north", q:"Rockefeller Center"},
+      {t:"3:30–4:00", a:"Central Park South", n:"Carriages, Plaza Hotel", q:"Central Park South"},
+      {t:"4:00 PM", key:true, a:"Hotel check-in · nap 1.5 hrs", n:"You'll need it to last through the show", q:"Renaissance New York Times Square Hotel"},
+      {t:"5:45 PM", a:"Up, freshen up, head out", n:"Bring a light layer — cold theatre"},
+      {t:"6:00–7:15", a:"🍽️ Koreatown dinner", meal:2},
+      {t:"7:30 PM", a:"Walk to Gershwin Theatre", n:"222 W 51 St", q:"Gershwin Theatre New York"},
+      {t:"8:00 PM", key:true, a:"🎭 Wicked — curtain up", n:"One intermission · ~2h45m total", q:"Gershwin Theatre New York"},
+      {t:"~10:45", a:"Curtain down", n:"5 min walk back to hotel"},
+      {t:"11:00 PM", a:"🍰 Late dessert", meal:3},
+      {t:"~11:30", a:"Back to the room", n:""},
+    ],
+  },
+  {
+    id:2, label:"Day 2", date:"Sun · Jun 28", title:"Lady Liberty + Lower Manhattan + DUMBO",
+    theme:"The classic downtown day — from the Statue of Liberty to the Manhattan skyline at DUMBO.",
+    prep:"Sunglasses, sunscreen, comfy shoes, water.",
+    reminders:["Screenshot the Liberty QR codes to your photos (poor signal on the island)","Charge phones fully + bring a power bank","Pedestal ticket needs no passport","Hit the pedestal first (second security) before time runs short","DUMBO photo spot: Washington St × Water St"],
+    items:[
+      {t:"7:30–8:30", a:"🍽️ Breakfast", meal:4},
+      {t:"9:30 AM", key:true, a:"Walk to Times Sq–42 St Station", n:"5 min", q:"Times Square 42 Street Subway Station"},
+      {t:"9:45 AM", a:"1 train (Downtown) → South Ferry", n:"Last stop — can't overshoot · 20–25 min", q:"South Ferry Subway Station Manhattan"},
+      {t:"10:15 AM", a:"Battery Park · find Statue City Cruises security", n:"Behind Castle Clinton", q:"Battery Park New York"},
+      {t:"10:30 AM", a:"Join the security line", n:"Arrive 30 min early"},
+      {t:"11:00 AM", key:true, a:"🗽 Board the ferry", n:"Ticket time = security time"},
+      {t:"11:30–1:00", a:"Liberty Island: pedestal + museum", n:"Pedestal first (2nd security)", q:"Liberty Island New York"},
+      {t:"12:30 PM", a:"🍽️ Lunch", meal:5},
+      {t:"1:00–3:00", a:"Ferry to Ellis Island · immigration museum", n:"Free audio guide", q:"Ellis Island National Museum"},
+      {t:"3:30 PM", a:"Ferry back to Battery Park", n:"", q:"Battery Park New York"},
+      {t:"3:45–4:15", a:"Battery Park → Charging Bull", n:"Expect a photo line at the bull", q:"Charging Bull Wall Street"},
+      {t:"4:15–5:00", a:"Wall St → Federal Hall → Trinity Church", n:"The prettiest stretch of Wall St", q:"Wall Street New York"},
+      {t:"5:00–5:45", a:"9/11 Memorial pools → Oculus", n:"Look up inside the Oculus", q:"9 11 Memorial New York"},
+      {t:"5:45 PM", a:"Start walking the Brooklyn Bridge", n:"From the Manhattan side", q:"Brooklyn Bridge Manhattan Entrance"},
+      {t:"6:30 PM", key:true, a:"Arrive DUMBO", n:"~30–40 min across the bridge", q:"Washington St and Water St Brooklyn"},
+      {t:"6:30–7:15", a:"📸 Washington St × Water St shot", n:"Golden hour begins — best light", q:"Washington St and Water St Brooklyn"},
+      {t:"7:30 PM", key:true, a:"🍽️ DUMBO dinner ⭐", meal:6},
+      {t:"9:00 PM", a:"Brooklyn Bridge Park / Pebble Beach", n:"Skyline glows after dark", q:"Brooklyn Bridge Park Pebble Beach"},
+      {t:"9:30 PM", a:"Uber back to the hotel", n:"Subway needs a transfer — Uber if tired"},
+      {t:"~10:00", a:"Back to the room", n:""},
+    ],
+  },
+  {
+    id:3, label:"Day 3", date:"Mon · Jun 29", title:"Neighborhood Walks + Empire State Sunset",
+    theme:"West side & downtown at a slow pace, a steakhouse lunch, capped by sunset atop the Empire State.",
+    prep:"Comfy shoes — this is the most-walking day.",
+    reminders:["Keens reservation 12:45 PM — arrive 5–10 min early, give the host your name","Empire State 7:45 PM — entrance at 20 West 34th St, take the 'red carpet' Express lane","Want the 102nd floor? Add it at the 86th-floor kiosk (~$35–38)","Pack your bags tonight — 7:30 AM departure tomorrow"],
+    items:[
+      {t:"8:30–9:30", a:"🍽️ Light breakfast", meal:7},
+      {t:"9:45 AM", a:"Walk to Times Sq–42 St Station", n:"", q:"Times Square 42 Street Subway Station"},
+      {t:"10:00 AM", a:"N/Q/R/W (Downtown) → Canal St", n:"5 stops, 15 min — take the NQRW Canal St", q:"Canal Street Subway Station NQRW Manhattan"},
+      {t:"10:15–11:30", a:"Chinatown → Little Italy", n:"Mott St, Mulberry St", q:"Chinatown Manhattan"},
+      {t:"11:30–12:30", a:"SoHo shopping", n:"Prince St, Spring St, Broadway", q:"SoHo New York"},
+      {t:"12:30 PM", a:"N/Q/R/W Prince St → 34 St–Herald Sq", n:"5 stops, 10 min", q:"Prince Street Subway Station"},
+      {t:"12:45 PM", key:true, a:"🥩 Keens Steakhouse lunch", meal:0},
+      {t:"2:30 PM", a:"Done at Keens", n:"Walk it off"},
+      {t:"2:30–3:15", a:"Subway/Uber to West Village", n:"A/C/E to 14 St", q:"West Village New York"},
+      {t:"3:15–4:00", a:"West Village & Meatpacking stroll", n:"Bleecker St, Christopher St", q:"Meatpacking District New York"},
+      {t:"4:00 PM", a:"Up the High Line at Gansevoort St", n:"South entrance", q:"High Line New York"},
+      {t:"4:00–5:30", a:"Walk the High Line north", n:"~1.5 mi end to end", q:"High Line New York"},
+      {t:"5:30 PM", a:"Arrive Hudson Yards", n:"North end of the High Line", q:"Vessel Hudson Yards"},
+      {t:"5:30–6:00", a:"🌀 Vessel exterior photos", n:"Shoot up from the plaza", q:"Vessel Hudson Yards"},
+      {t:"6:00 PM", a:"7 train: 34 St–Hudson Yards → Times Sq", n:"Or 25 min walk", q:"34 Street Hudson Yards Subway Station"},
+      {t:"6:30 PM", a:"Back to hotel · rest & change", n:"Pack bags"},
+      {t:"7:30 PM", a:"Walk to the Empire State Building", n:"12 min from hotel", q:"Empire State Building"},
+      {t:"7:45 PM", key:true, a:"🏙️ Empire State check-in", n:"20 W 34th St · Express lane", q:"Empire State Building"},
+      {t:"8:00 PM", a:"86th-floor observatory", n:"Golden hour"},
+      {t:"8:30 PM", key:true, a:"🌅 Sunset", n:""},
+      {t:"8:30–9:15", a:"City lights up · add 102F if you like", n:"Upgrade kiosk on the 86th floor"},
+      {t:"9:30 PM", a:"Head down", n:""},
+      {t:"9:30–10:00", a:"🍽️ Late dinner", meal:8},
+      {t:"10:30 PM", a:"Back to hotel · pack & sleep early", n:""},
+    ],
+  },
+];
+
+const PREP = [
+  {h:"Reservations / Tickets", items:[
+    {t:"Wicked — 6/27 8:00 PM (premium ×2)", d:true},
+    {t:"Statue of Liberty + Pedestal — 6/28 11:00 AM (QR ×2)", d:true},
+    {t:"Keens — 6/29 12:45 PM (Resy ×2)", d:true},
+    {t:"Empire State — 6/29 7:45 PM (Conf 7WHHNG8H, 86F + Express ×2)", d:true},
+    {t:"Day 2 DUMBO dinner — reserve once chosen (Celestine / River Café)", d:false},
+    {t:"Day 1 K-town dinner — reserve if choosing Cote", d:false},
+  ]},
+  {h:"Phone apps", items:[
+    {t:"GalaPro (Wicked captions) — test before seating", d:false},
+    {t:"Uber — confirm payment method works", d:false},
+    {t:"Google Maps — download NYC offline map", d:false},
+    {t:"Screenshot every QR ticket to photos (weak island signal)", d:false},
+  ]},
+  {h:"Carry-on", items:[
+    {t:"Power bank (essential for Liberty day)", d:false},
+    {t:"Folding umbrella (late-June afternoon storms)", d:false},
+    {t:"Sunscreen + sunglasses", d:false},
+    {t:"Light jacket (cold theatres & restaurants)", d:false},
+    {t:"Comfortable shoes (10–20k steps a day)", d:false},
+    {t:"Reusable water bottle (NYC tap is drinkable)", d:false},
+  ]},
+  {h:"Documents / Payment", items:[
+    {t:"Passport, driver's license (photo ID for domestic flight)", d:false},
+    {t:"Contactless credit card (tap OMNY into subway)", d:false},
+    {t:"Some cash for tips (~$50–100)", d:false},
+    {t:"All confirmation numbers in phone notes", d:false},
+  ]},
+  {h:"Transport", items:[
+    {t:"Airport ↔ hotel: Uber primary, subway backup", d:true},
+    {t:"6/30 departure 7:30 AM — set the alarm", d:false},
+  ]},
+];
+
+/* ============================================================
+   PHOTOS (Wikipedia REST summary, cached) + lazy loader
+   ============================================================ */
+const photoCache = JSON.parse(localStorage.getItem("nyc-photos")||"{}");
+async function getPhoto(wiki){
+  if(!wiki) return null;
+  if(wiki in photoCache) return photoCache[wiki];
+  try{
+    const r = await fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(wiki.replace(/ /g,"_")));
+    if(!r.ok){ photoCache[wiki]=null; localStorage.setItem("nyc-photos",JSON.stringify(photoCache)); return null; }
+    const j = await r.json();
+    let src = (j.thumbnail && j.thumbnail.source) || null;
+    if(src) src = src.replace(/\/\d+px-/,"/640px-");
+    photoCache[wiki]=src; localStorage.setItem("nyc-photos",JSON.stringify(photoCache));
+    return src;
+  }catch(e){ return null; }
+}
+const photoIO = new IntersectionObserver((entries)=>{
+  entries.forEach(async e=>{
+    if(!e.isIntersecting) return;
+    const el = e.target; photoIO.unobserve(el);
+    const url = await getPhoto(el.dataset.wiki);
+    if(url){ el.style.backgroundImage = `url("${url}")`; el.classList.add("has-photo"); el.textContent=""; }
+  });
+},{rootMargin:"250px"});
+function observePhotos(root){ (root||document).querySelectorAll(".thumb[data-wiki]").forEach(el=>photoIO.observe(el)); }
+function firstEmoji(s){ const m=(s||"").match(/\p{Extended_Pictographic}/u); return m?m[0]:"🍽️"; }
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const $ = s => document.querySelector(s);
+function mapLinkHTML(q){
+  if(!q) return "";
+  return `<a class="mlink" target="_blank" rel="noopener" href="${gmap(q)}">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Directions</a>`;
+}
+function weatherHTML(d){
+  const w = WEATHER[d]; if(!w) return "";
+  const c = t => Math.round((t-32)*5/9);
+  return `<div class="wx" data-wx-day="${d}">
+    <div class="icon">${w.icon}</div>
+    <div class="col"><div class="temp">${w.hi}°<small> / ${w.lo}°F · ${c(w.hi)}° / ${c(w.lo)}°C</small></div><div class="desc">${w.desc}</div></div>
+    <div style="text-align:right"><div class="rain">💧 ${w.rain}%</div><div class="faint">rain</div></div></div>`;
+}
+
+/* ---- Days ---- */
+function renderDayBar(active){
+  $("#daybar").innerHTML = DAYS.map(d =>
+    `<button class="daychip ${d.id===active?'active':''}" data-day="${d.id}">${d.label}<small>${d.date}</small></button>`).join("");
+  document.querySelectorAll(".daychip").forEach(b => b.onclick = () => renderDay(+b.dataset.day));
+}
+function renderDay(id){
+  const d = DAYS.find(x=>x.id===id);
+  renderDayBar(id);
+  let html = `<div class="sec-head"><h2>${d.title}</h2></div>
+    <p class="lead">${d.theme}</p>${weatherHTML(id)}
+    <div class="card" style="padding:11px 14px"><span class="pill gold">🎒 Prep</span> <span class="muted">${d.prep}</span></div>`;
+  if(d.reminders.length){
+    html += `<div class="reminders"><h4>⚡ Today's Key Reminders</h4><ul>${d.reminders.map(r=>`<li>${r}</li>`).join("")}</ul></div>`;
+  }
+  html += `<div class="tl">` + d.items.map(it => {
+    if(it.meal!==undefined){
+      const g = FOOD[it.meal];
+      const cta = g.confirmed
+        ? `<div class="meal-cta">🔖 Reserved · tap for details ›</div>`
+        : `<div class="meal-cta"><span class="opts">${g.opts.map(o=>`<i>${o.b}</i>`).join("")}</span> ${g.opts.length} options · tap to choose ›</div>`;
+      return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
+        <div class="tl-card meal ${it.key?'key':''}" data-meal="${it.meal}"><div class="tc"><div class="tl-act">${it.a}</div>${cta}</div></div></div>`;
+    }
+    const wiki = Q2WIKI[it.q] || "";
+    const thumb = wiki ? `<div class="thumb" data-wiki="${wiki}">${firstEmoji(it.a)}</div>` : "";
+    return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
+      <div class="tl-card ${it.key?'key':''}"><div class="tc"><div class="tl-act">${it.a}</div>
+        ${it.n?`<div class="tl-note">${it.n}</div>`:""}${it.q?`<div style="margin-top:6px">${mapLinkHTML(it.q)}</div>`:""}</div>${thumb}</div></div>`;
+  }).join("") + `</div><div class="spacer"></div>`;
+  $("#day-content").innerHTML = html;
+  document.querySelectorAll("#day-content .tl-card.meal").forEach(c => c.onclick = () => openMeal(+c.dataset.meal));
+  observePhotos($("#day-content"));
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---- Food tab ---- */
+const FOOD_DAYS = [
+  {label:"Day 1 · Sat Jun 27", slots:[1,2,3]},
+  {label:"Day 2 · Sun Jun 28", slots:[4,5,6]},
+  {label:"Day 3 · Mon Jun 29", slots:[7,0,8]},
+];
+function renderFood(){
+  let html = "";
+  FOOD_DAYS.forEach(fd => {
+    html += `<div class="food-day">${fd.label}</div>`;
+    fd.slots.forEach(i => {
+      const g = FOOD[i];
+      const right = g.confirmed ? "Booked ✓" : g.opts.length+" options";
+      html += `<div class="mealslot ${g.confirmed?'confirmed':''}" data-meal="${i}">
+        <div class="mi">${g.icon}</div>
+        <div class="mc"><div class="mt">${g.title}</div><div class="mw">${g.when}</div></div>
+        <div class="mr">${right}<span class="chev">›</span></div></div>`;
+    });
+  });
+  $("#food-content").innerHTML = html + `<div class="foot">Decide together — then book the ones that need a reservation.</div>`;
+  document.querySelectorAll("#food-content .mealslot").forEach(c => c.onclick = () => openMeal(+c.dataset.meal));
+}
+
+/* ---- Bottom sheet ---- */
+function openMeal(i){
+  const g = FOOD[i];
+  $("#sheet-title").textContent = g.title;
+  $("#sheet-sub").textContent = g.when;
+  $("#sheet-body").innerHTML = g.opts.map(o => `
+    <div class="sopt ${o.confirmed?'confirmed':''}">
+      <div class="sopt-photo placeholder ${o.wiki?'':'noimg'}" ${o.wiki?`data-wiki="${o.wiki}"`:""} data-emoji="${firstEmoji(g.icon+o.name)}">
+        <div class="sopt-badge">${o.b}</div>
+      </div>
+      <div class="sopt-body">
+        <div class="sopt-name">${o.name}</div>
+        <div class="sopt-meta">${o.meta} · <span class="sopt-price">${o.price}</span></div>
+        ${o.note?`<div class="sopt-note">${o.note}</div>`:""}
+        ${o.q?`<div class="sopt-link">${mapLinkHTML(o.q)}</div>`:""}
+      </div></div>`).join("");
+  $("#sheet").classList.add("open");
+  $("#sheet-backdrop").classList.add("open");
+  $("#sheet-body").scrollTop = 0;
+  // resolve photos for this sheet
+  $("#sheet-body").querySelectorAll(".sopt-photo[data-wiki]").forEach(async el=>{
+    const url = await getPhoto(el.dataset.wiki);
+    if(url){ el.style.backgroundImage=`url("${url}")`; el.classList.remove("placeholder"); el.classList.add("has-photo"); }
+  });
+}
+function closeSheet(){ $("#sheet").classList.remove("open"); $("#sheet-backdrop").classList.remove("open"); }
+$("#sheet-backdrop").onclick = closeSheet;
+$(".sheet-handle").onclick = closeSheet;
+
+/* ---- Prep ---- */
+function renderPrep(){
+  const saved = JSON.parse(localStorage.getItem("nyc-prep")||"{}");
+  $("#prep-content").innerHTML = PREP.map((g,gi) => `
+    <div class="sec-head"><h2 style="font-size:18px">${g.h}</h2></div>
+    <div class="card">${g.items.map((it,ii)=>{
+        const key = gi+"-"+ii;
+        const done = (key in saved) ? saved[key] : it.d;
+        return `<div class="chk ${done?'done':''}" data-key="${key}"><div class="box"></div><div class="txt">${it.t}</div></div>`;
+      }).join("")}</div>`).join("") + `<div class="foot">Tap to check off — saved on this device.</div>`;
+  document.querySelectorAll(".chk").forEach(c => c.onclick = () => {
+    c.classList.toggle("done");
+    const s = JSON.parse(localStorage.getItem("nyc-prep")||"{}");
+    s[c.dataset.key] = c.classList.contains("done");
+    localStorage.setItem("nyc-prep", JSON.stringify(s));
+  });
+}
+
+/* ---- Map ---- */
+let map, mapInit=false;
+const CAT_COLOR = {attraction:"#9ff0b5", food:"#efb3e4", transit:"#8fa8f5", hotel:"#c4b5f7"};
+const LABEL_ZOOM = 14;
+function initMap(){
+  if(mapInit) return; mapInit = true;
+  map = L.map("map",{zoomControl:true, attributionControl:true}).setView([40.722,-74.00],12);
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{
+    attribution:'© OpenStreetMap, © CARTO', maxZoom:19, subdomains:"abcd"}).addTo(map);
+  const bounds = [];
+  LOCATIONS.forEach(loc => {
+    const color = CAT_COLOR[loc.c] || "#c4b5f7";
+    const m = L.circleMarker([loc.lat,loc.lng],{radius:7, color:"#0a0a12", weight:2, fillColor:color, fillOpacity:1}).addTo(map);
+    m.bindTooltip(loc.n, {permanent:true, direction:"top", className:"pin-label", offset:[0,-5]});
+    m.bindPopup(`${loc.wiki?`<div class="pop-photo" data-wiki="${loc.wiki}"></div>`:""}
+      <div class="pop-t">${loc.n}</div><div class="pop-c">${loc.c}</div>
+      <a class="pop-link" target="_blank" rel="noopener" href="${gmap(loc.q||loc.n)}">📍 Open in Google Maps →</a>`);
+    bounds.push([loc.lat,loc.lng]);
+  });
+  map.fitBounds(bounds,{padding:[34,34]});
+  const updateLabels = () => document.getElementById("map").classList.toggle("show-labels", map.getZoom() >= LABEL_ZOOM);
+  map.on("zoomend", updateLabels); updateLabels();
+  map.on("popupopen", e=>{
+    const node = e.popup.getElement().querySelector(".pop-photo[data-wiki]");
+    if(node && !node.dataset.done){ node.dataset.done="1";
+      getPhoto(node.dataset.wiki).then(u=>{ if(u){ node.style.backgroundImage=`url("${u}")`; node.classList.add("has-photo"); } });
+    }
+  });
+  setTimeout(()=>map.invalidateSize(), 200);
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function show(view){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  $("#view-"+view).classList.add("active");
+  document.querySelectorAll("nav.tabbar button").forEach(b=>b.classList.toggle("active", b.dataset.view===view));
+  if(view==="map"){ initMap(); setTimeout(()=>map&&map.invalidateSize(),120); }
+  window.scrollTo({top:0,behavior:"instant"});
+}
+document.querySelectorAll("nav.tabbar button").forEach(b => b.onclick = () => show(b.dataset.view));
+
+/* ============================================================
+   LIVE WEATHER (Open-Meteo, no key) — falls back to seasonal
+   ============================================================ */
+const WX_CODE = {
+  0:["☀️","Clear sky"],1:["🌤️","Mostly clear"],2:["⛅","Partly cloudy"],3:["☁️","Overcast"],
+  45:["🌫️","Fog"],48:["🌫️","Rime fog"],51:["🌦️","Light drizzle"],53:["🌦️","Drizzle"],55:["🌧️","Heavy drizzle"],
+  61:["🌦️","Light rain"],63:["🌧️","Rain"],65:["🌧️","Heavy rain"],80:["🌦️","Light showers"],81:["🌧️","Showers"],
+  82:["⛈️","Violent showers"],95:["⛈️","Thunderstorm"],96:["⛈️","Storm w/ hail"],99:["⛈️","Severe storm"]
+};
+async function liveWeather(){
+  try{
+    const url = "https://api.open-meteo.com/v1/forecast?latitude=40.71&longitude=-74.01"
+      + "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode"
+      + "&temperature_unit=fahrenheit&timezone=America/New_York&start_date=2026-06-27&end_date=2026-06-29";
+    const r = await fetch(url); if(!r.ok) return;
+    const j = await r.json(); const dts = j.daily.time;
+    [1,2,3].forEach(dayId=>{
+      const idx = dts.indexOf(WEATHER[dayId].date); if(idx<0) return;
+      const code = j.daily.weathercode[idx];
+      const wc = WX_CODE[code] || [WEATHER[dayId].icon, WEATHER[dayId].desc];
+      WEATHER[dayId] = {date:WEATHER[dayId].date, icon:wc[0], desc:wc[1]+" · live forecast",
+        hi:Math.round(j.daily.temperature_2m_max[idx]), lo:Math.round(j.daily.temperature_2m_min[idx]),
+        rain:j.daily.precipitation_probability_max[idx] ?? WEATHER[dayId].rain};
+    });
+    const shown = document.querySelector("[data-wx-day]");
+    if(shown){ const d=+shown.dataset.wxDay; shown.outerHTML = weatherHTML(d); }
+  }catch(e){}
+}
+
+/* ============================================================ */
+renderDay(1);
+renderFood();
+renderPrep();
+liveWeather();
+</script>
+</body>
+</html>
