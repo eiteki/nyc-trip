@@ -442,14 +442,14 @@ const gmap = q => "https://www.google.com/maps/search/?api=1&query=" + encodeURI
 
 const LOCATIONS = [
   {n:"Renaissance Times Square Hotel", c:"hotel", q:"Renaissance New York Times Square Hotel 714 7th Avenue", lat:40.7596, lng:-73.9845, wiki:"Times Square"},
-  {n:"Times Square", c:"attraction", q:"Times Square New York", lat:40.7580, lng:-73.9855, wiki:"Times Square"},
-  {n:"New York Public Library", c:"attraction", q:"New York Public Library Stephen A Schwarzman Building", lat:40.7532, lng:-73.9822, wiki:"New York Public Library Main Branch"},
-  {n:"Bryant Park", c:"attraction", q:"Bryant Park New York", lat:40.7536, lng:-73.9832, wiki:"Bryant Park"},
+  {n:"Times Square", c:"attraction", q:"Times Square New York", lat:40.7580, lng:-73.9855, wiki:"Times Square", img:"img/times-square.png"},
+  {n:"New York Public Library", c:"attraction", q:"New York Public Library Stephen A Schwarzman Building", lat:40.7532, lng:-73.9822, wiki:"New York Public Library Main Branch", img:"img/nypl.png"},
+  {n:"Bryant Park", c:"attraction", q:"Bryant Park New York", lat:40.7536, lng:-73.9832, wiki:"Bryant Park", img:"img/bryant-park.png"},
   {n:"Rockefeller Center", c:"attraction", q:"Rockefeller Center", lat:40.7587, lng:-73.9787, wiki:"Rockefeller Center"},
   {n:"St. Patrick's Cathedral", c:"attraction", q:"St Patrick Cathedral New York", lat:40.7585, lng:-73.9759, wiki:"St. Patrick's Cathedral (Manhattan)"},
   {n:"Fifth Avenue", c:"attraction", q:"Fifth Avenue New York", lat:40.7625, lng:-73.9740, wiki:"Fifth Avenue"},
-  {n:"Central Park South", c:"attraction", q:"Central Park South", lat:40.7660, lng:-73.9760, wiki:"Central Park"},
-  {n:"Gershwin Theatre (Wicked)", c:"attraction", q:"Gershwin Theatre New York", lat:40.7625, lng:-73.9838, wiki:"Gershwin Theatre"},
+  {n:"Central Park South", c:"attraction", q:"Central Park South", lat:40.7660, lng:-73.9760, wiki:"Central Park", img:"img/central-park.png"},
+  {n:"Gershwin Theatre (Wicked)", c:"attraction", q:"Gershwin Theatre New York", lat:40.7625, lng:-73.9838, wiki:"Gershwin Theatre", img:"img/wicked.png"},
   {n:"Koreatown (32nd St)", c:"attraction", q:"Koreatown Manhattan 32nd Street", lat:40.7476, lng:-73.9870, wiki:"Koreatown, Manhattan"},
   {n:"Battery Park", c:"attraction", q:"Battery Park New York", lat:40.7033, lng:-74.0170, wiki:"The Battery (Manhattan)"},
   {n:"Statue of Liberty", c:"attraction", q:"Liberty Island New York", lat:40.6892, lng:-74.0445, wiki:"Statue of Liberty"},
@@ -565,15 +565,15 @@ const DAYS = [
     prep:"Folding umbrella + light jacket (theatre A/C runs cold).",
     reminders:["🎭 Wicked — 8:00 PM curtain @ Gershwin Theatre (premium ×2)"],
     items:[
-      {t:"7:18 AM", key:true, a:"Arrive EWR (Newark)", n:"~30 min gate-to-exit · then Uber to the hotel (60+ min in rush)", q:"Newark Liberty International Airport"},
-      {t:"9:00–9:30", key:true, a:"Arrive hotel · drop bags at desk", n:"Keep toiletries in your day bag", q:"Renaissance New York Times Square Hotel"},
+      {t:"7:18 AM", key:true, noimg:true, a:"Arrive EWR (Newark)", n:"~30 min gate-to-exit · then Uber to the hotel (60+ min in rush)", q:"Newark Liberty International Airport"},
+      {t:"9:00–9:30", key:true, noimg:true, a:"Arrive hotel · drop bags at desk", n:"Keep toiletries in your day bag", q:"Renaissance New York Times Square Hotel"},
       {t:"10:00–11:30", a:"🍽️ Brunch", meal:1},
       {t:"11:30–1:00", a:"Times Square photos & big screens", n:"Right downstairs", q:"Times Square New York"},
       {t:"1:00–2:00", a:"📚 New York Public Library (42 & 5th)", n:"Rose Reading Room, Astor Hall — free", q:"New York Public Library Stephen A Schwarzman Building"},
       {t:"2:00–2:30", a:"☕ Bryant Park sit-down", n:"Right behind the NYPL", q:"Bryant Park New York"},
-      {t:"2:30–3:30", a:"Rockefeller → St. Patrick's → Fifth Ave stroll", n:"Heading north", q:"Rockefeller Center"},
+      {t:"2:30–3:30", noimg:true, a:"Rockefeller → St. Patrick's → Fifth Ave stroll", n:"A stroll up Fifth Ave past Rockefeller Center, St. Patrick's Cathedral & the flagship stores", q:"Rockefeller Center"},
       {t:"3:30–4:00", a:"Central Park South", n:"Carriages, Plaza Hotel", q:"Central Park South"},
-      {t:"4:00 PM", key:true, a:"Hotel check-in · nap 1.5 hrs", n:"You'll need it to last through the show", q:"Renaissance New York Times Square Hotel"},
+      {t:"4:00 PM", key:true, noimg:true, a:"Hotel check-in · nap 1.5 hrs", n:"You'll need it to last through the show", q:"Renaissance New York Times Square Hotel"},
       {t:"6:00–7:15", a:"🍽️ Koreatown dinner", meal:2},
       {t:"8:00 PM", key:true, booked:true, a:"🎭 Wicked — curtain up", n:"Gershwin Theatre · 222 W 51 St · ~2h45m, one intermission", q:"Gershwin Theatre New York"},
       {t:"11:00 PM", a:"🍰 Late dessert", meal:3},
@@ -741,8 +741,7 @@ function renderDay(id, autoscroll){
   const d = DAYS.find(x=>x.id===id); curDay = id;
   renderDayBar(id);
   let html = `<div class="sec-head"><h2>${d.title}</h2></div>
-    <p class="lead">${d.theme}</p>${weatherHTML(id)}
-    <div class="card" style="padding:11px 14px"><span class="pill gold">🎒 Prep</span> <span class="muted">${d.prep}</span></div>`;
+    <p class="lead">${d.theme}</p>${weatherHTML(id)}`;
   if(d.reminders.length){
     html += `<div class="reminders"><h4>⚡ Today's Key Reminders</h4><ul>${d.reminders.map(r=>`<li>${r}</li>`).join("")}</ul></div>`;
   }
@@ -758,9 +757,9 @@ function renderDay(id, autoscroll){
     const loc = Q2LOC[it.q];
     const wiki = loc ? loc.wiki : "";
     const search = loc ? loc.n : (it.q || "");
-    const img = (loc && loc.img) ? loc.img : "";
+    const img = it.img || (loc && loc.img) || "";
     const pkey = img || wiki || search;
-    const thumb = it.q ? `<div class="thumb" data-pkey="${attr(pkey)}" data-wiki="${attr(wiki)}" data-search="${attr(search)}" data-img="${attr(img)}">${firstEmoji(it.a)}</div>` : "";
+    const thumb = (it.q && !it.noimg) ? `<div class="thumb" data-pkey="${attr(pkey)}" data-wiki="${attr(wiki)}" data-search="${attr(search)}" data-img="${attr(img)}">${firstEmoji(it.a)}</div>` : "";
     if(it.steps){
       return `<div class="tl-item ${it.key?'key':''}"><div class="tl-dot"></div><div class="tl-time">${it.t}</div>
       <div class="tl-card expandable"><div class="tc"><div class="tl-act">${it.a}</div>
