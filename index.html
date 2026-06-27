@@ -255,15 +255,11 @@
     background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent;}
   .sheet-sub{font-size:12.5px;color:var(--ink-faint);margin-top:2px;}
   .sheet-body{overflow-y:auto;padding:0 16px 22px;-webkit-overflow-scrolling:touch;}
-  .sopt{background:var(--card);border:1px solid var(--line);border-radius:15px;overflow:hidden;margin-bottom:13px;}
+  .sopt{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:11px;}
   .sopt.confirmed{border-color:var(--gold-soft);}
-  .sopt-photo{position:relative;height:158px;background:var(--card-2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;}
-  .sopt-photo.placeholder{background:var(--holo);}
-  .sopt-photo.placeholder::after{content:attr(data-emoji);font-size:54px;filter:saturate(1.1);}
-  .sopt-photo.has-photo::after{content:"";}
-  .sopt-badge{position:absolute;top:11px;left:11px;width:30px;height:30px;border-radius:9px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.25);}
+  .sopt-badge{flex:0 0 30px;height:30px;border-radius:9px;background:var(--card-2);border:1px solid var(--line);color:var(--lav);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;}
   .sopt.confirmed .sopt-badge{background:var(--holo);color:#0a0a12;border-color:transparent;}
-  .sopt-body{padding:12px 15px 14px;}
+  .sopt-body{flex:1;min-width:0;}
   .sopt-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16.5px;letter-spacing:-.01em;}
   .sopt-meta{font-size:13px;color:var(--ink-dim);margin-top:2px;}
   .sopt-price{font-family:'Space Grotesk',sans-serif;color:var(--mint);font-size:13px;font-weight:600;}
@@ -863,30 +859,18 @@ function openMeal(i){
   const g = FOOD[i];
   $("#sheet-title").textContent = g.title;
   $("#sheet-sub").textContent = g.when;
-  $("#sheet-body").innerHTML = g.opts.map(o => {
-    const canPhoto = !!o.q;            // real venue (has a maps query)
-    const wiki = o.wiki||"", search = o.name||"", img = o.img||"";
-    const pkey = img||wiki||search;
-    return `
+  $("#sheet-body").innerHTML = g.opts.map(o => `
     <div class="sopt ${o.confirmed?'confirmed':''}">
-      <div class="sopt-photo placeholder" ${canPhoto?`data-pkey="${attr(pkey)}" data-wiki="${attr(wiki)}" data-search="${attr(search)}" data-img="${attr(img)}"`:""} data-emoji="${firstEmoji(g.icon+o.name)}">
-        <div class="sopt-badge">${o.b}</div>
-      </div>
+      <div class="sopt-badge">${o.b}</div>
       <div class="sopt-body">
         <div class="sopt-name">${o.name}</div>
         <div class="sopt-meta">${o.meta} · <span class="sopt-price">${o.price}</span></div>
         ${o.note?`<div class="sopt-note">${o.note}</div>`:""}
         ${o.q?`<div class="sopt-link">${mapLinkHTML(o.q)}</div>`:""}
-      </div></div>`;
-  }).join("");
+      </div></div>`).join("");
   $("#sheet").classList.add("open");
   $("#sheet-backdrop").classList.add("open");
   $("#sheet-body").scrollTop = 0;
-  // resolve photos for this sheet
-  $("#sheet-body").querySelectorAll(".sopt-photo[data-pkey]").forEach(async el=>{
-    const url = await resolvePhoto(el.dataset.pkey, el.dataset.wiki||"", el.dataset.search||"", el.dataset.img||"");
-    if(url){ el.style.backgroundImage=`url("${url}")`; el.classList.remove("placeholder"); el.classList.add("has-photo"); }
-  });
 }
 function closeSheet(){ $("#sheet").classList.remove("open"); $("#sheet-backdrop").classList.remove("open"); }
 $("#sheet-backdrop").onclick = closeSheet;
