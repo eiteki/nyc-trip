@@ -770,7 +770,8 @@ function wireBookedFX(root){
       const py = Math.min(1,Math.max(0,(ev.clientY-r.top)/r.height));
       setCardVars(card.style, px, py);
     });
-    card.addEventListener("pointerleave", ()=>{
+    card.addEventListener("pointerleave", ev=>{
+      if(ev.pointerType && ev.pointerType!=="mouse") return; // touch → leave gyroscope in control
       const s=card.style;
       s.setProperty("--card-opacity","0");
       s.setProperty("--rx","0deg"); s.setProperty("--ry","0deg");
